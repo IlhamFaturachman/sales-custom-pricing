@@ -126,7 +126,7 @@ const pricingScriptsStr = pricingScripts;
       <div id="main-content">
         <div class="layout-container">
           <div class="content bg-white">
-            <div class="py-8 md:py-20">
+            <div class="py-4 md:py-10">
               <section id="price" class="mx-auto px-8 md:px-12">
                 <div>
                   <div class="mx-auto max-w-7xl md:mb-4 px-8 md:px-12">
@@ -183,6 +183,7 @@ const pricingScriptsStr = pricingScripts;
                               class="plan-group"
                               data-category-id={cat.id}
                               data-duration-id={dur.id}
+                              data-duration-label={dur.duration_label}
                               style={'display: ' + (isDefault ? '' : 'none')}
                             >
                               <div class="flex justify-center max-w-5xl mx-auto gap-4 flex-wrap mt-8">
@@ -284,6 +285,7 @@ const pricingScriptsStr = pricingScripts;
                             class="mobile-plan-group"
                             data-category-id={cat.id}
                             data-duration-id={dur.id}
+                            data-duration-label={dur.duration_label}
                             style={'display: ' + (isDefault ? '' : 'none')}
                           >
                             <div class="grid grid-cols-1 gap-6 mt-4 px-4">

@@ -17,10 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function getDurationLabel(durId) {
-    var allButtons = document.querySelectorAll('[data-duration-id="' + durId + '"]');
-    for (var i = 0; i < allButtons.length; i++) {
-      var lbl = allButtons[i].getAttribute('data-label');
+    var groups = document.querySelectorAll('[data-duration-id="' + durId + '"][data-duration-label]');
+    for (var i = 0; i < groups.length; i++) {
+      var lbl = groups[i].getAttribute('data-duration-label');
       if (lbl) return lbl;
+    }
+    var buttons = document.querySelectorAll('button[data-duration-id="' + durId + '"][data-label]');
+    for (var j = 0; j < buttons.length; j++) {
+      var lbl2 = buttons[j].getAttribute('data-label');
+      if (lbl2) return lbl2;
     }
     return durId.substring(0, 8);
   }
