@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Maxchat Dynamic Client Pricing System
 
-## Getting Started
+Sistem internal untuk tim sales yang dapat menghasilkan halaman pricing khusus untuk setiap client.
 
-First, run the development server:
+## Tech Stack
+
+- **Frontend**: Next.js 15 + TypeScript + App Router
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Deployment**: Vercel
+
+## Setup
+
+### 1. Clone & Install
+
+```bash
+git clone <repo-url>
+cd sales-custom-pricing
+npm install
+```
+
+### 2. Supabase Setup
+
+1. Buat project di [Supabase](https://supabase.com)
+2. Buka SQL Editor dan jalankan migration dari `supabase/migrations/001_create_pricing_tables.sql`
+3. Buka **Authentication > Providers** dan enable Email provider
+4. Buat user baru di **Authentication > Users**
+
+### 3. Environment Variables
+
+Copy `.env.local.example` ke `.env.local` dan isi:
+
+```bash
+cp .env.local.example .env.local
+```
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+Values bisa ditemukan di **Supabase Dashboard > Settings > API**
+
+### 4. Run Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## URL Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| URL | Description |
+|-----|-------------|
+| `/` | Landing page |
+| `/login` | Login sales |
+| `/dashboard` | List semua pricing |
+| `/dashboard/create` | Buat pricing baru |
+| `/dashboard/edit/[id]` | Edit pricing |
+| `/p/[slug]` | Public pricing page (client view) |
 
-## Learn More
+## Flow
 
-To learn more about Next.js, take a look at the following resources:
+### Sales Flow
+1. Login ke dashboard
+2. Buat pricing baru
+3. Input client info, kategori, durasi, plan, dan fitur
+4. Set status ke "Published"
+5. Copy link `/p/[slug]` dan kirim ke client
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Client Flow
+1. Buka link yang dikirim sales
+2. Lihat pricing yang sudah dikustomisasi
+3. Klik "Contact us" untuk hubungi sales
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database Schema
 
-## Deploy on Vercel
+```
+pricing_pages (header & meta)
+├── pricing_categories (tab kategori)
+├── pricing_durations (durasi langganan)
+└── pricing_plans (plan per kategori + durasi)
+    └── pricing_features (fitur per plan)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ✅ CRUD pricing page
+- ✅ Dynamic kategori (tab)
+- ✅ Dynamic durasi (6/12 bulan, dll)
+- ✅ Dynamic pricing per kategori + durasi
+- ✅ Dynamic fitur per plan
+- ✅ Duplicate pricing
+- ✅ Status management (draft/published/expired/archived)
+- ✅ Expired page handling
+- ✅ Responsive design
+- ✅ Authentication
+
+## Deployment
+
+### Vercel
+
+1. Push ke GitHub
+2. Import project di Vercel
+3. Add environment variables
+4. Deploy
+
+### Environment Variables di Vercel
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
