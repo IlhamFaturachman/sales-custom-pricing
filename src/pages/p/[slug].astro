@@ -23,7 +23,7 @@ const [categoriesResult, durationsResult, plansResult] = await Promise.all([
 ]);
 
 const categories = categoriesResult.data || [];
-const durations = durationsResult.data || [];
+const allDurations = durationsResult.data || [];
 const plans = plansResult.data || [];
 
 const planIds = plans.map(p => p.id);
@@ -38,10 +38,24 @@ const plansWithFeatures = plans.map(plan => ({
   features: features.filter(f => f.pricing_plan_id === plan.id),
 }));
 
+// Derive durations per category from plans (only show durations that have plans)
+const durationsByCategory: Record<string, any[]> = {};
+categories.forEach(cat => {
+  const catPlanDurationIds = new Set(
+    plansWithFeatures
+      .filter(p => p.pricing_category_id === cat.id)
+      .map(p => p.pricing_duration_id)
+  );
+  durationsByCategory[cat.id] = allDurations
+    .filter(d => catPlanDurationIds.has(d.id))
+    .sort((a, b) => a.sort_order - b.sort_order);
+});
+
+// Group plans by category and duration
 const plansByCategoryAndDuration: Record<string, Record<string, any[]>> = {};
 categories.forEach(cat => {
   plansByCategoryAndDuration[cat.id] = {};
-  durations.forEach(dur => {
+  durationsByCategory[cat.id].forEach(dur => {
     plansByCategoryAndDuration[cat.id][dur.id] = plansWithFeatures.filter(
       p => p.pricing_category_id === cat.id && p.pricing_duration_id === dur.id
     );
@@ -147,10 +161,11 @@ const pricingScriptsStr = pricingScripts;
                       </div>
                     </div>
                     <div class="flex justify-center mb-12">
-                      <div class="inline-flex bg-[#f4f6f8] rounded-full p-1 shadow-lg text-sm">
-                        {durations.map((dur, i) => (
+                      <div class="inline-flex bg-[#f4f6f8] rounded-full p-1 shadow-lg text-sm duration-buttons-container">
+                        {categories[0] && durationsByCategory[categories[0].id]?.map((dur, i) => (
                           <button
                             data-duration-id={dur.id}
+                            data-label={dur.duration_label}
                             class={'duration-btn px-4 py-1.5 rounded-full font-semibold transition-all duration-200 ' + (i === 0 ? 'bg-white text-orange-600 shadow-lg' : 'flex items-center gap-1 text-gray-700 hover:text-orange-600')}
                           >
                             <span>{dur.duration_label}</span>
@@ -160,7 +175,7 @@ const pricingScriptsStr = pricingScripts;
                     </div>
                     <div class="w-full max-w-7xl mx-auto px-8 md:px-12">
                       {categories.map((cat, catIndex) => (
-                        durations.map((dur, durIndex) => {
+                        durationsByCategory[cat.id]?.map((dur, durIndex) => {
                           const plans = plansByCategoryAndDuration[cat.id]?.[dur.id] || [];
                           const isDefault = catIndex === 0 && durIndex === 0;
                           return (
@@ -248,10 +263,11 @@ const pricingScriptsStr = pricingScripts;
 
                   <div class="my-6 block md:hidden">
                     <div class="flex justify-center mb-12">
-                      <div class="inline-flex bg-[#f4f6f8] rounded-full p-1 shadow-lg text-sm">
-                        {durations.map((dur, i) => (
+                      <div class="inline-flex bg-[#f4f6f8] rounded-full p-1 shadow-lg text-sm duration-buttons-container">
+                        {categories[0] && durationsByCategory[categories[0].id]?.map((dur, i) => (
                           <button
                             data-duration-id={dur.id}
+                            data-label={dur.duration_label}
                             class={'duration-btn px-4 py-1.5 rounded-full font-semibold transition-all duration-200 ' + (i === 0 ? 'bg-white text-orange-600 shadow-lg' : 'flex items-center gap-1 text-gray-700 hover:text-orange-600')}
                           >
                             <span>{dur.duration_label}</span>
@@ -260,7 +276,7 @@ const pricingScriptsStr = pricingScripts;
                       </div>
                     </div>
                     {categories.map((cat, catIndex) => (
-                      durations.map((dur, durIndex) => {
+                      durationsByCategory[cat.id]?.map((dur, durIndex) => {
                         const plans = plansByCategoryAndDuration[cat.id]?.[dur.id] || [];
                         const isDefault = catIndex === 0 && durIndex === 0;
                         return (
