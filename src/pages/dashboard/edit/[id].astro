@@ -1,0 +1,561 @@
+---
+import Dashboard from '../../../layouts/Dashboard.astro';
+import { supabase } from '../../../lib/supabase';
+
+const { id } = Astro.params;
+
+const { data: page, error: pageError } = await supabase
+  .from('pricing_pages')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (pageError || !page) {
+  return Astro.redirect('/dashboard');
+}
+
+const { data: dbCategories } = await supabase
+  .from('pricing_categories')
+  .select('*')
+  .eq('pricing_page_id', id)
+  .order('sort_order');
+
+const { data: dbDurations } = await supabase
+  .from('pricing_durations')
+  .select('*')
+  .eq('pricing_page_id', id)
+  .order('sort_order');
+
+const { data: dbPlans } = await supabase
+  .from('pricing_plans')
+  .select('*')
+  .eq('pricing_page_id', id)
+  .order('sort_order');
+
+const planIds = dbPlans?.map(p => p.id) || [];
+const { data: dbFeatures } = planIds.length > 0
+  ? await supabase.from('pricing_features').select('*').in('pricing_plan_id', planIds).order('sort_order')
+  : { data: [] };
+
+const catIdToIndex: Record<string, number> = {};
+(dbCategories || []).forEach((c: any, i: number) => { catIdToIndex[c.id] = i; });
+
+const durIdToIndex: Record<string, number> = {};
+(dbDurations || []).forEach((d: any, i: number) => { durIdToIndex[d.id] = i; });
+
+const initialCategories = (dbCategories || []).map((c: any) => ({
+  id: c.id,
+  name: c.category_name,
+  icon: c.category_icon || 'system'
+}));
+
+const initialDurations = (dbDurations || []).map((d: any) => ({
+  id: d.id,
+  label: d.duration_label,
+  months: d.duration_months
+}));
+
+const initialPlans = (dbPlans || []).map((p: any) => ({
+  id: p.id,
+  categoryIndex: catIdToIndex[p.pricing_category_id] || 0,
+  durationIndex: durIdToIndex[p.pricing_duration_id] || 0,
+  name: p.plan_name,
+  description: p.plan_description || '',
+  price: p.price ? String(p.price) : '',
+  priceSuffix: p.price_suffix || 'per bulan',
+  ctaText: p.cta_text || 'Contact us',
+  ctaUrl: p.cta_url || '',
+  features: (dbFeatures || [])
+    .filter((f: any) => f.pricing_plan_id === p.id)
+    .map((f: any) => ({ category: f.feature_category_name, name: f.feature_name }))
+}));
+---
+<Dashboard title="Edit Pricing Page">
+  <div class="dash-page-header">
+    <h1 class="dash-page-title">Edit Pricing Page</h1>
+    <a href="/dashboard" class="dash-btn dash-btn-secondary">Kembali</a>
+  </div>
+
+  <div class="dash-wizard-progress">
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number active" id="stepNum1">1</div>
+      <span class="dash-wizard-step-label active" id="stepLabel1">Info Dasar</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector1"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum2">2</div>
+      <span class="dash-wizard-step-label" id="stepLabel2">Kategori</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector2"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum3">3</div>
+      <span class="dash-wizard-step-label" id="stepLabel3">Durasi</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector3"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum4">4</div>
+      <span class="dash-wizard-step-label" id="stepLabel4">Paket</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector4"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum5">5</div>
+      <span class="dash-wizard-step-label" id="stepLabel5">Review</span>
+    </div>
+  </div>
+
+  <form id="editForm">
+    <div id="step1" class="dash-wizard-step">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Informasi Dasar</h2>
+        </div>
+        <div class="dash-card-body">
+          <div class="dash-grid dash-grid-2">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Client *</label>
+              <input type="text" name="client_name" class="dash-form-input" required value={page.client_name} />
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Perusahaan *</label>
+              <input type="text" name="company_name" class="dash-form-input" required value={page.company_name} />
+            </div>
+          </div>
+          <div class="dash-grid dash-grid-2">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Slug URL *</label>
+              <input type="text" name="slug" class="dash-form-input" required value={page.slug} pattern="[a-z0-9-]+" />
+              <p class="dash-form-hint">Hanya huruf kecil, angka, dan tanda hubung</p>
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Status</label>
+              <select name="status" class="dash-form-input dash-form-select">
+                <option value="draft" selected={page.status === 'draft'}>Draft</option>
+                <option value="published" selected={page.status === 'published'}>Published</option>
+              </select>
+            </div>
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label">Judul Header *</label>
+            <input type="text" name="header_title" class="dash-form-input" required value={page.header_title} />
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label">Valid Sampai</label>
+            <input type="date" name="valid_until" class="dash-form-input" value={page.valid_until || ''} />
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="nextStep(2)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step2" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Kategori Produk</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan kategori produk yang akan ditampilkan sebagai tab di halaman pricing.</p>
+          <div id="categories"></div>
+          <button type="button" onclick="addCategory()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Kategori</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(1)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(3)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step3" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Durasi Langganan</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan pilihan durasi langganan (misalnya 6 bulan, 12 bulan).</p>
+          <div id="durations"></div>
+          <button type="button" onclick="addDuration()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Durasi</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(2)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(4)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step4" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Paket Harga</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan paket harga untuk setiap kombinasi kategori dan durasi.</p>
+          <div id="plans"></div>
+          <button type="button" onclick="addPlan()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Paket</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(3)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(5)" class="dash-btn dash-btn-primary">Review →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step5" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Review & Simpan</h2>
+        </div>
+        <div class="dash-card-body">
+          <div id="review"></div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <button type="button" onclick="prevStep(4)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="submit" id="submitBtn" class="dash-btn dash-btn-primary">Update Pricing Page</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div 
+    id="initial-data" 
+    data-categories={JSON.stringify(initialCategories)}
+    data-durations={JSON.stringify(initialDurations)}
+    data-plans={JSON.stringify(initialPlans)}
+    style="display: none;"
+  ></div>
+
+  <script>
+    const initialDataEl = document.getElementById('initial-data');
+    const categories = JSON.parse(initialDataEl.dataset.categories || '[]');
+    const durations = JSON.parse(initialDataEl.dataset.durations || '[]');
+    const plans = JSON.parse(initialDataEl.dataset.plans || '[]');
+    let currentStep = 1;
+
+    function nextStep(step) {
+      if (currentStep === 1 && !validateStep1()) return;
+      if (currentStep === 2 && categories.length === 0) {
+        alert('Tambahkan minimal 1 kategori');
+        return;
+      }
+      if (currentStep === 3 && durations.length === 0) {
+        alert('Tambahkan minimal 1 durasi');
+        return;
+      }
+
+      document.getElementById('step' + currentStep).style.display = 'none';
+      document.getElementById('step' + step).style.display = 'block';
+      updateProgress(step);
+      currentStep = step;
+
+      if (step === 5) renderReview();
+    }
+
+    function prevStep(step) {
+      document.getElementById('step' + currentStep).style.display = 'none';
+      document.getElementById('step' + step).style.display = 'block';
+      updateProgress(step);
+      currentStep = step;
+    }
+
+    function updateProgress(step) {
+      for (let i = 1; i <= 5; i++) {
+        const num = document.getElementById('stepNum' + i);
+        const label = document.getElementById('stepLabel' + i);
+        num.classList.remove('active', 'completed');
+        label.classList.remove('active');
+
+        if (i < step) {
+          num.classList.add('completed');
+          num.innerHTML = '✓';
+        } else if (i === step) {
+          num.classList.add('active');
+          label.classList.add('active');
+          num.innerHTML = i;
+        } else {
+          num.innerHTML = i;
+        }
+      }
+      for (let i = 1; i <= 4; i++) {
+        const conn = document.getElementById('connector' + i);
+        conn.classList.toggle('completed', i < step);
+      }
+    }
+
+    function validateStep1() {
+      const form = document.getElementById('editForm');
+      const slug = form.slug.value;
+      if (!form.client_name.value || !form.company_name.value || !slug || !form.header_title.value) {
+        alert('Mohon isi semua field yang wajib (*)');
+        return false;
+      }
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        alert('Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung');
+        return false;
+      }
+      return true;
+    }
+
+    function addCategory() {
+      categories.push({ id: 'cat_' + Date.now(), name: '', icon: 'system' });
+      renderCategories();
+    }
+
+    function removeCategory(index) {
+      categories.splice(index, 1);
+      renderCategories();
+      renderPlans();
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categories');
+      if (categories.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada kategori. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
+      container.innerHTML = categories.map((cat, i) => `
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
+          <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="dash-form-input" style="flex:1"
+            oninput="categories[${i}].name = this.value" />
+          <select class="dash-form-input dash-form-select" style="width:160px" onchange="categories[${i}].icon = this.value">
+            <option value="system" ${cat.icon === 'system' ? 'selected' : ''}>System</option>
+            <option value="omnichannel" ${cat.icon === 'omnichannel' ? 'selected' : ''}>Omnichannel</option>
+            <option value="whatsapp" ${cat.icon === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+            <option value="maintenance" ${cat.icon === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+          </select>
+          <button type="button" onclick="removeCategory(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+        </div>
+      `).join('');
+    }
+
+    function addDuration() {
+      durations.push({ id: 'dur_' + Date.now(), label: '', months: 6 });
+      renderDurations();
+    }
+
+    function removeDuration(index) {
+      durations.splice(index, 1);
+      renderDurations();
+      renderPlans();
+    }
+
+    function renderDurations() {
+      const container = document.getElementById('durations');
+      if (durations.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada durasi. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
+      container.innerHTML = durations.map((dur, i) => `
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
+          <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="dash-form-input" style="flex:1"
+            oninput="durations[${i}].label = this.value" />
+          <input type="number" value="${dur.months}" placeholder="Bulan" class="dash-form-input" style="width:120px" min="1"
+            oninput="durations[${i}].months = parseInt(this.value) || 1" />
+          <button type="button" onclick="removeDuration(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+        </div>
+      `).join('');
+    }
+
+    function addPlan() {
+      if (categories.length === 0) { alert('Tambahkan kategori terlebih dahulu'); return; }
+      if (durations.length === 0) { alert('Tambahkan durasi terlebih dahulu'); return; }
+      plans.push({ id: 'plan_' + Date.now(), categoryIndex: 0, durationIndex: 0, name: '', description: '', price: '', priceSuffix: 'per bulan', ctaText: 'Contact us', ctaUrl: '', features: [] });
+      renderPlans();
+    }
+
+    function removePlan(index) {
+      plans.splice(index, 1);
+      renderPlans();
+    }
+
+    function addFeature(planIndex) {
+      plans[planIndex].features.push({ category: '', name: '' });
+      renderPlans();
+    }
+
+    function removeFeature(planIndex, featureIndex) {
+      plans[planIndex].features.splice(featureIndex, 1);
+      renderPlans();
+    }
+
+    function renderPlans() {
+      const container = document.getElementById('plans');
+      if (plans.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada paket. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
+      container.innerHTML = plans.map((plan, i) => `
+        <div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px;background:#fafafa;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h4 style="font-weight:600;font-size:16px;">Paket ${i + 1}</h4>
+            <button type="button" onclick="removePlan(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+          </div>
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Kategori</label>
+              <select class="dash-form-input dash-form-select" onchange="plans[${i}].categoryIndex = parseInt(this.value)">
+                ${categories.map((cat, ci) => `<option value="${ci}" ${plan.categoryIndex === ci ? 'selected' : ''}>${cat.name || 'Kategori ' + (ci+1)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Durasi</label>
+              <select class="dash-form-input dash-form-select" onchange="plans[${i}].durationIndex = parseInt(this.value)">
+                ${durations.map((dur, di) => `<option value="${di}" ${plan.durationIndex === di ? 'selected' : ''}>${dur.label || 'Durasi ' + (di+1)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Paket</label>
+              <input type="text" value="${plan.name}" class="dash-form-input" placeholder="Basic Plan" oninput="plans[${i}].name = this.value" />
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Harga (kosongkan = Hubungi Kami)</label>
+              <input type="number" value="${plan.price}" class="dash-form-input" placeholder="500000" oninput="plans[${i}].price = this.value" />
+            </div>
+          </div>
+          <div class="dash-form-group dash-mb-4">
+            <label class="dash-form-label">Deskripsi</label>
+            <textarea class="dash-form-input dash-form-textarea" placeholder="Deskripsi paket..." oninput="plans[${i}].description = this.value">${plan.description}</textarea>
+          </div>
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">CTA Text</label>
+              <input type="text" value="${plan.ctaText}" class="dash-form-input" oninput="plans[${i}].ctaText = this.value" />
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">CTA URL (opsional)</label>
+              <input type="text" value="${plan.ctaUrl}" class="dash-form-input" placeholder="https://wa.me/..." oninput="plans[${i}].ctaUrl = this.value" />
+            </div>
+          </div>
+          <div style="border-top:1px solid #e5e7eb;padding-top:16px;margin-top:8px;">
+            <label class="dash-form-label" style="font-weight:600;">Fitur Paket</label>
+            ${plan.features.map((feat, fi) => `
+              <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="dash-form-input" style="width:180px"
+                  oninput="plans[${i}].features[${fi}].category = this.value" />
+                <input type="text" value="${feat.name}" placeholder="Nama Fitur" class="dash-form-input" style="flex:1"
+                  oninput="plans[${i}].features[${fi}].name = this.value" />
+                <button type="button" onclick="removeFeature(${i}, ${fi})" class="dash-btn dash-btn-danger dash-btn-sm">✕</button>
+              </div>
+            `).join('')}
+            <button type="button" onclick="addFeature(${i})" class="dash-btn dash-btn-secondary dash-btn-sm">+ Tambah Fitur</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderReview() {
+      const form = document.getElementById('editForm');
+      const fd = new FormData(form);
+      const review = document.getElementById('review');
+
+      const basicHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Informasi Dasar</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;">
+              <div><strong>Client:</strong> ${fd.get('client_name')}</div>
+              <div><strong>Perusahaan:</strong> ${fd.get('company_name')}</div>
+              <div><strong>Slug:</strong> /p/${fd.get('slug')}</div>
+              <div><strong>Status:</strong> ${fd.get('status')}</div>
+            </div>
+            <div style="margin-top:8px;font-size:14px;"><strong>Header:</strong> ${fd.get('header_title')}</div>
+            ${fd.get('valid_until') ? `<div style="margin-top:4px;font-size:14px;"><strong>Valid Sampai:</strong> ${fd.get('valid_until')}</div>` : ''}
+          </div>
+        </div>`;
+
+      const catHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Kategori (${categories.length})</h3>
+            ${categories.length === 0 ? '<p class="dash-text-gray">Tidak ada kategori</p>' : categories.map(c => `<div style="padding:6px 0;font-size:14px;">• <strong>${c.name}</strong> <span style="color:#9ca3af;">(${c.icon})</span></div>`).join('')}
+          </div>
+        </div>`;
+
+      const durHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Durasi (${durations.length})</h3>
+            ${durations.length === 0 ? '<p class="dash-text-gray">Tidak ada durasi</p>' : durations.map(d => `<div style="padding:6px 0;font-size:14px;">• <strong>${d.label}</strong> <span style="color:#9ca3af;">(${d.months} bulan)</span></div>`).join('')}
+          </div>
+        </div>`;
+
+      const planHtml = `
+        <div class="dash-card" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Paket Harga (${plans.length})</h3>
+            ${plans.length === 0 ? '<p class="dash-text-gray">Tidak ada paket</p>' : plans.map((p, i) => {
+              const catName = categories[p.categoryIndex]?.name || 'N/A';
+              const durName = durations[p.durationIndex]?.label || 'N/A';
+              const priceStr = p.price ? 'Rp ' + parseInt(p.price).toLocaleString('id-ID') + ' ' + (p.priceSuffix || 'per bulan') : 'Hubungi Kami';
+              return `
+                <div style="padding:12px;background:#f9fafb;border-radius:8px;margin-bottom:8px;">
+                  <div style="font-size:14px;"><strong>Paket ${i+1}:</strong> ${p.name || '(belum bernama)'}</div>
+                  <div style="font-size:13px;color:#6b7280;margin-top:4px;">
+                    ${catName} · ${durName} · ${priceStr} · ${p.features.length} fitur
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+      review.innerHTML = basicHtml + catHtml + durHtml + planHtml;
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const submitBtn = document.getElementById('submitBtn');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Menyimpan...';
+
+      try {
+        const data = {
+          client_name: formData.get('client_name'),
+          company_name: formData.get('company_name'),
+          slug: formData.get('slug'),
+          status: formData.get('status'),
+          header_title: formData.get('header_title'),
+          valid_until: formData.get('valid_until') || null,
+          categories: categories.map(c => ({ name: c.name, icon: c.icon })),
+          durations: durations.map(d => ({ label: d.label, months: d.months })),
+          plans: plans.map(p => ({
+            categoryIndex: p.categoryIndex,
+            durationIndex: p.durationIndex,
+            name: p.name,
+            description: p.description,
+            price: p.price ? parseInt(p.price) : null,
+            priceSuffix: p.priceSuffix,
+            ctaText: p.ctaText,
+            ctaUrl: p.ctaUrl,
+            features: p.features
+          }))
+        };
+
+        const response = await fetch('/api/pricing/{id}', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          window.location.href = '/dashboard';
+        } else {
+          const errorData = await response.json();
+          alert('Error: ' + (errorData.error || 'Gagal mengupdate pricing page'));
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Pricing Page';
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Pricing Page';
+      }
+    });
+
+    renderCategories();
+    renderDurations();
+    renderPlans();
+  </script>
+</Dashboard>

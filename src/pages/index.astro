@@ -2,10 +2,196 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="Maxchat | Sales Custom Pricing">
-  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif;">
-    <div style="text-align: center;">
-      <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Maxchat Sales Custom Pricing</h1>
-      <p style="color: #666;">Halaman pricing custom untuk setiap client</p>
-    </div>
+  <div class="landing">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="nav-brand">
+          <div class="brand-icon">M</div>
+          <span class="brand-text">Maxchat</span>
+        </a>
+        <div class="nav-actions">
+          <a href="/login" class="nav-link">Login</a>
+          <a href="/login" class="btn-cta">Mulai Sekarang</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Sistem Internal Sales</span>
+        </div>
+        <h1 class="hero-title">
+          <span>Dynamic Pricing</span>
+          <span class="hero-title-gradient">untuk Setiap Client</span>
+        </h1>
+        <p class="hero-desc">
+          Buat halaman pricing custom untuk setiap client. Kirim link personal dan tingkatkan konversi penjualan bisnis Anda.
+        </p>
+        <div class="hero-buttons">
+          <a href="/login" class="btn-hero-primary">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            Buka Dashboard
+          </a>
+          <a href="https://maxchat.id" target="_blank" rel="noopener noreferrer" class="btn-hero-secondary">
+            Kunjungi Maxchat.id
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+      <div class="features-header">
+        <h2>Fitur Utama</h2>
+        <p>Semua yang Anda butuhkan untuk mengelola pricing client</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #fff7ed;">
+            <svg style="color: #f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3>Pricing Per Client</h3>
+          <p>Buat harga khusus untuk setiap client berdasarkan negosiasi, volume, atau partnership.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #eff6ff;">
+            <svg style="color: #3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          </div>
+          <h3>Link Unik</h3>
+          <p>Kirim link pricing personal ke client. Mereka langsung melihat penawaran khusus mereka.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #f0fdf4;">
+            <svg style="color: #22c55e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          </div>
+          <h3>Kelola Mudah</h3>
+          <p>Dashboard lengkap untuk membuat, mengedit, dan menduplikasi pricing page.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #faf5ff;">
+            <svg style="color: #a855f7;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          </div>
+          <h3>Duplicate Pricing</h3>
+          <p>Salin pricing dari client lain dan sesuaikan untuk client baru.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #fdf2f8;">
+            <svg style="color: #ec4899;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3>Status Management</h3>
+          <p>Kelola status pricing: draft, published, expired, atau archived.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: #fefce8;">
+            <svg style="color: #eab308;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </div>
+          <h3>Aman & Terpercaya</h3>
+          <p>Data tersimpan aman di Supabase dengan autentikasi yang terpercaya.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-card">
+        <div class="cta-bg-orb cta-bg-orb-1"></div>
+        <div class="cta-bg-orb cta-bg-orb-2"></div>
+        <div class="cta-content">
+          <h2>Siap Meningkatkan Penjualan?</h2>
+          <p>Mulai buat pricing custom untuk client Anda sekarang.</p>
+          <a href="/login" class="btn-cta-white">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            Mulai Sekarang
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <div class="brand-icon">M</div>
+          <span>Maxchat</span>
+        </div>
+        <p class="footer-copy">&copy; 2026 Maxchat. All rights reserved.</p>
+      </div>
+    </footer>
   </div>
+
+  <style>
+    .landing { min-height: 100vh; background: linear-gradient(to bottom, #fff7ed, white 40%, white); }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid #f3f4f6; }
+    .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; height: 64px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
+    .brand-text { font-size: 20px; font-weight: bold; color: #111827; }
+    .nav-actions { display: flex; align-items: center; gap: 16px; }
+    .nav-link { font-size: 14px; font-weight: 500; color: #4b5563; text-decoration: none; transition: color 0.2s; }
+    .nav-link:hover { color: #111827; }
+    .btn-cta { display: inline-flex; align-items: center; padding: 8px 20px; background: linear-gradient(135deg, #f97316, #ef4444); color: white; font-size: 14px; font-weight: 600; border-radius: 8px; text-decoration: none; transition: all 0.2s; box-shadow: 0 2px 8px rgba(249,115,22,0.25); }
+    .btn-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(249,115,22,0.35); }
+
+    /* Hero */
+    .hero { max-width: 1280px; margin: 0 auto; padding: 96px 24px 80px; text-align: center; }
+    .hero-content { max-width: 720px; margin: 0 auto; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 9999px; margin-bottom: 28px; }
+    .badge-dot { width: 8px; height: 8px; background: #f97316; border-radius: 9999px; animation: pulse 2s infinite; }
+    .hero-badge span:last-child { font-size: 14px; font-weight: 500; color: #c2410c; }
+    .hero-title { font-size: 52px; font-weight: 800; color: #111827; margin-bottom: 24px; line-height: 1.1; letter-spacing: -0.02em; }
+    .hero-title-gradient { display: block; background: linear-gradient(135deg, #f97316, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-desc { font-size: 18px; color: #6b7280; line-height: 1.7; margin-bottom: 40px; }
+    .hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+    .btn-hero-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: linear-gradient(135deg, #f97316, #ef4444); color: white; font-weight: 600; font-size: 16px; border-radius: 12px; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 16px rgba(249,115,22,0.3); }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.4); }
+    .btn-hero-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: white; color: #374151; font-weight: 600; font-size: 16px; border-radius: 12px; text-decoration: none; border: 1px solid #e5e7eb; transition: all 0.2s; }
+    .btn-hero-secondary:hover { background: #f9fafb; border-color: #d1d5db; }
+
+    /* Features */
+    .features { max-width: 1280px; margin: 0 auto; padding: 80px 24px; }
+    .features-header { text-align: center; margin-bottom: 56px; }
+    .features-header h2 { font-size: 32px; font-weight: 800; color: #111827; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .features-header p { color: #6b7280; font-size: 16px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+    .feature-card { background: white; border-radius: 16px; padding: 28px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: all 0.3s; }
+    .feature-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .feature-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+    .feature-icon svg { width: 24px; height: 24px; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 8px; }
+    .feature-card p { color: #6b7280; font-size: 14px; line-height: 1.6; }
+
+    /* CTA Section */
+    .cta-section { max-width: 1280px; margin: 0 auto; padding: 80px 24px; }
+    .cta-card { background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 24px; padding: 56px 48px; text-align: center; position: relative; overflow: hidden; }
+    .cta-bg-orb { position: absolute; border-radius: 9999px; filter: blur(60px); background: rgba(255,255,255,0.1); }
+    .cta-bg-orb-1 { width: 300px; height: 300px; top: -100px; left: -80px; }
+    .cta-bg-orb-2 { width: 400px; height: 400px; bottom: -150px; right: -100px; }
+    .cta-content { position: relative; z-index: 10; }
+    .cta-content h2 { font-size: 32px; font-weight: 800; color: white; margin-bottom: 12px; }
+    .cta-content p { color: rgba(255,255,255,0.85); margin-bottom: 32px; font-size: 16px; }
+    .btn-cta-white { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: white; color: #ea580c; font-weight: 600; font-size: 16px; border-radius: 12px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .btn-cta-white:hover { background: #f9fafb; transform: translateY(-1px); }
+
+    /* Footer */
+    .landing-footer { background: #111827; padding: 40px 24px; }
+    .footer-container { max-width: 1280px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+    .footer-brand { display: flex; align-items: center; gap: 12px; color: white; font-size: 18px; font-weight: bold; }
+    .footer-copy { color: #9ca3af; font-size: 14px; }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 36px; }
+      .hero { padding: 64px 16px 48px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .cta-card { padding: 40px 24px; }
+    }
+  </style>
 </Base>

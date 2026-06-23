@@ -8,36 +8,36 @@ const { data: pages, error } = await supabase
   .order('created_at', { ascending: false });
 ---
 <Dashboard title="Dashboard">
-  <div class="page-header">
-    <h1 class="page-title">Pricing Pages</h1>
-    <a href="/dashboard/create" class="btn btn-primary">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+  <div class="dash-page-header">
+    <h1 class="dash-page-title">Pricing Pages</h1>
+    <a href="/dashboard/create" class="dash-btn dash-btn-primary">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
       Buat Baru
     </a>
   </div>
 
-  <div class="grid grid-3 mb-6">
-    <div class="stat-card">
-      <div class="stat-label">Total Pages</div>
-      <div class="stat-value">{pages?.length || 0}</div>
+  <div class="dash-stats-grid">
+    <div class="dash-stat-card">
+      <p class="dash-stat-label">Total Pages</p>
+      <p class="dash-stat-value">{pages?.length || 0}</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Published</div>
-      <div class="stat-value">{pages?.filter(p => p.status === 'published').length || 0}</div>
+    <div class="dash-stat-card">
+      <p class="dash-stat-label">Published</p>
+      <p class="dash-stat-value">{pages?.filter(p => p.status === 'published').length || 0}</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-label">Draft</div>
-      <div class="stat-value">{pages?.filter(p => p.status === 'draft').length || 0}</div>
+    <div class="dash-stat-card">
+      <p class="dash-stat-label">Draft</p>
+      <p class="dash-stat-value">{pages?.filter(p => p.status === 'draft').length || 0}</p>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Semua Pricing Page</h2>
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <h2 class="dash-card-title">Semua Pricing Page</h2>
     </div>
-    <div class="card-body">
+    <div class="dash-card-body" style="padding: 0;">
       {pages && pages.length > 0 ? (
-        <table class="table">
+        <table class="dash-table">
           <thead>
             <tr>
               <th>Nama</th>
@@ -50,20 +50,20 @@ const { data: pages, error } = await supabase
           <tbody>
             {pages.map(page => (
               <tr>
-                <td><strong>{page.client_name}</strong></td>
+                <td><span class="dash-client-name">{page.client_name}</span></td>
                 <td>{page.company_name}</td>
-                <td><code>/p/{page.slug}</code></td>
+                <td><code class="dash-slug-code">/p/{page.slug}</code></td>
                 <td>
-                  <span class={`badge ${page.status === 'published' ? 'badge-green' : 'badge-yellow'}`}>
+                  <span class={`dash-badge ${page.status === 'published' ? 'dash-badge-green' : page.status === 'draft' ? 'dash-badge-yellow' : 'dash-badge-gray'}`}>
                     {page.status}
                   </span>
                 </td>
                 <td>
-                  <div class="actions">
-                    <a href={`/p/${page.slug}`} target="_blank" class="btn btn-secondary btn-sm">Preview</a>
-                    <a href={`/dashboard/edit/${page.id}`} class="btn btn-secondary btn-sm">Edit</a>
-                    <form method="POST" action={`/dashboard/delete/${page.id}`} style="display: inline;">
-                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                  <div class="dash-actions">
+                    <a href={`/p/${page.slug}`} target="_blank" class="dash-btn dash-btn-secondary dash-btn-sm">Preview</a>
+                    <a href={`/dashboard/edit/${page.id}`} class="dash-btn dash-btn-secondary dash-btn-sm">Edit</a>
+                    <form method="POST" action={`/dashboard/delete/${page.id}`} style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus pricing page ini? Semua data terkait akan dihapus.');">
+                      <button type="submit" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
                     </form>
                   </div>
                 </td>
@@ -72,8 +72,8 @@ const { data: pages, error } = await supabase
           </tbody>
         </table>
       ) : (
-        <div class="empty-state">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        <div class="dash-empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
           <p>Belum ada pricing page. <a href="/dashboard/create">Buat sekarang</a></p>
         </div>
       )}

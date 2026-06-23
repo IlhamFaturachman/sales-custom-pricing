@@ -2,85 +2,223 @@
 import Dashboard from '../../layouts/Dashboard.astro';
 ---
 <Dashboard title="Buat Pricing Page">
-  <div class="page-header">
-    <h1 class="page-title">Buat Pricing Page Baru</h1>
-    <a href="/dashboard" class="btn btn-secondary">Kembali</a>
+  <div class="dash-page-header">
+    <h1 class="dash-page-title">Buat Pricing Page Baru</h1>
+    <a href="/dashboard" class="dash-btn dash-btn-secondary">Kembali</a>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Informasi Dasar</h2>
+  <div class="dash-wizard-progress">
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number active" id="stepNum1">1</div>
+      <span class="dash-wizard-step-label active" id="stepLabel1">Info Dasar</span>
     </div>
-    <div class="card-body">
-      <form id="createForm">
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label class="form-label">Nama Client</label>
-            <input type="text" name="client_name" class="form-input" required placeholder="John Doe" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nama Perusahaan</label>
-            <input type="text" name="company_name" class="form-input" required placeholder="PT Maju Sejahtera" />
-          </div>
-        </div>
-        <div class="grid grid-2">
-          <div class="form-group">
-            <label class="form-label">Slug URL</label>
-            <input type="text" name="slug" class="form-input" required placeholder="maju-sejahtera" pattern="[a-z0-9-]+" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Status</label>
-            <select name="status" class="form-input form-select">
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Judul Header</label>
-          <input type="text" name="header_title" class="form-input" required placeholder="Solusi Omnichannel Terintegrasi untuk PT Maju Sejahtera" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Valid Sampai</label>
-          <input type="date" name="valid_until" class="form-input" />
-        </div>
-
-        <div id="app" data-mode="create">
-          <div class="mb-6">
-            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Kategori</h3>
-            <div id="categories"></div>
-            <button type="button" onclick="addCategory()" class="btn btn-secondary mt-4">+ Tambah Kategori</button>
-          </div>
-
-          <div class="mb-6">
-            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Durasi</h3>
-            <div id="durations"></div>
-            <button type="button" onclick="addDuration()" class="btn btn-secondary mt-4">+ Tambah Durasi</button>
-          </div>
-
-          <div class="mb-6">
-            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Paket Harga</h3>
-            <div id="plans"></div>
-            <button type="button" onclick="addPlan()" class="btn btn-secondary mt-4">+ Tambah Paket</button>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
-          <a href="/dashboard" class="btn btn-secondary">Batal</a>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </form>
+    <div class="dash-wizard-connector" id="connector1"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum2">2</div>
+      <span class="dash-wizard-step-label" id="stepLabel2">Kategori</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector2"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum3">3</div>
+      <span class="dash-wizard-step-label" id="stepLabel3">Durasi</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector3"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum4">4</div>
+      <span class="dash-wizard-step-label" id="stepLabel4">Paket</span>
+    </div>
+    <div class="dash-wizard-connector" id="connector4"></div>
+    <div class="dash-wizard-step-indicator">
+      <div class="dash-wizard-step-number" id="stepNum5">5</div>
+      <span class="dash-wizard-step-label" id="stepLabel5">Review</span>
     </div>
   </div>
+
+  <form id="createForm">
+    <div id="step1" class="dash-wizard-step">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Informasi Dasar</h2>
+        </div>
+        <div class="dash-card-body">
+          <div class="dash-grid dash-grid-2">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Client *</label>
+              <input type="text" name="client_name" class="dash-form-input" required placeholder="John Doe" />
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Perusahaan *</label>
+              <input type="text" name="company_name" class="dash-form-input" required placeholder="PT Maju Sejahtera" />
+            </div>
+          </div>
+          <div class="dash-grid dash-grid-2">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Slug URL *</label>
+              <input type="text" name="slug" class="dash-form-input" required placeholder="maju-sejahtera" pattern="[a-z0-9-]+" />
+              <p class="dash-form-hint">Hanya huruf kecil, angka, dan tanda hubung</p>
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">Status</label>
+              <select name="status" class="dash-form-input dash-form-select">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </div>
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label">Judul Header *</label>
+            <input type="text" name="header_title" class="dash-form-input" required placeholder="Solusi Omnichannel Terintegrasi untuk PT Maju Sejahtera" />
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label">Valid Sampai</label>
+            <input type="date" name="valid_until" class="dash-form-input" />
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="nextStep(2)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step2" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Kategori Produk</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan kategori produk yang akan ditampilkan sebagai tab di halaman pricing.</p>
+          <div id="categories"></div>
+          <button type="button" onclick="addCategory()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Kategori</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(1)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(3)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step3" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Durasi Langganan</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan pilihan durasi langganan (misalnya 6 bulan, 12 bulan).</p>
+          <div id="durations"></div>
+          <button type="button" onclick="addDuration()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Durasi</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(2)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(4)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step4" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Paket Harga</h2>
+        </div>
+        <div class="dash-card-body">
+          <p class="dash-text-gray dash-mb-4">Tambahkan paket harga untuk setiap kombinasi kategori dan durasi.</p>
+          <div id="plans"></div>
+          <button type="button" onclick="addPlan()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Paket</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+            <button type="button" onclick="prevStep(3)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="button" onclick="nextStep(5)" class="dash-btn dash-btn-primary">Review →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step5" class="dash-wizard-step" style="display: none;">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Review & Simpan</h2>
+        </div>
+        <div class="dash-card-body">
+          <div id="review"></div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+            <button type="button" onclick="prevStep(4)" class="dash-btn dash-btn-secondary">← Kembali</button>
+            <button type="submit" id="submitBtn" class="dash-btn dash-btn-primary">Simpan Pricing Page</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 
   <script is:inline>
     let categories = [];
     let durations = [];
     let plans = [];
+    let currentStep = 1;
+
+    function nextStep(step) {
+      if (currentStep === 1 && !validateStep1()) return;
+      if (currentStep === 2 && categories.length === 0) {
+        alert('Tambahkan minimal 1 kategori');
+        return;
+      }
+      if (currentStep === 3 && durations.length === 0) {
+        alert('Tambahkan minimal 1 durasi');
+        return;
+      }
+
+      document.getElementById('step' + currentStep).style.display = 'none';
+      document.getElementById('step' + step).style.display = 'block';
+      updateProgress(step);
+      currentStep = step;
+
+      if (step === 5) renderReview();
+    }
+
+    function prevStep(step) {
+      document.getElementById('step' + currentStep).style.display = 'none';
+      document.getElementById('step' + step).style.display = 'block';
+      updateProgress(step);
+      currentStep = step;
+    }
+
+    function updateProgress(step) {
+      for (let i = 1; i <= 5; i++) {
+        const num = document.getElementById('stepNum' + i);
+        const label = document.getElementById('stepLabel' + i);
+        num.classList.remove('active', 'completed');
+        label.classList.remove('active');
+
+        if (i < step) {
+          num.classList.add('completed');
+          num.innerHTML = '✓';
+        } else if (i === step) {
+          num.classList.add('active');
+          label.classList.add('active');
+          num.innerHTML = i;
+        } else {
+          num.innerHTML = i;
+        }
+      }
+      for (let i = 1; i <= 4; i++) {
+        const conn = document.getElementById('connector' + i);
+        conn.classList.toggle('completed', i < step);
+      }
+    }
+
+    function validateStep1() {
+      const form = document.getElementById('createForm');
+      const slug = form.slug.value;
+      if (!form.client_name.value || !form.company_name.value || !slug || !form.header_title.value) {
+        alert('Mohon isi semua field yang wajib (*)');
+        return false;
+      }
+      if (!/^[a-z0-9-]+$/.test(slug)) {
+        alert('Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung');
+        return false;
+      }
+      return true;
+    }
 
     function addCategory() {
-      const id = 'cat_' + Date.now();
-      categories.push({ id, name: '', icon: 'system' });
+      categories.push({ id: 'cat_' + Date.now(), name: '', icon: 'system' });
       renderCategories();
     }
 
@@ -91,24 +229,27 @@ import Dashboard from '../../layouts/Dashboard.astro';
 
     function renderCategories() {
       const container = document.getElementById('categories');
+      if (categories.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada kategori. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
       container.innerHTML = categories.map((cat, i) => `
-        <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
-          <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="form-input" style="flex: 1" 
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
+          <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="dash-form-input" style="flex:1"
             oninput="categories[${i}].name = this.value" />
-          <select class="form-input form-select" style="width: 150px" onchange="categories[${i}].icon = this.value">
+          <select class="dash-form-input dash-form-select" style="width:160px" onchange="categories[${i}].icon = this.value">
             <option value="system" ${cat.icon === 'system' ? 'selected' : ''}>System</option>
             <option value="omnichannel" ${cat.icon === 'omnichannel' ? 'selected' : ''}>Omnichannel</option>
             <option value="whatsapp" ${cat.icon === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
             <option value="maintenance" ${cat.icon === 'maintenance' ? 'selected' : ''}>Maintenance</option>
           </select>
-          <button type="button" onclick="removeCategory(${i})" class="btn btn-danger btn-sm">Hapus</button>
+          <button type="button" onclick="removeCategory(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
         </div>
       `).join('');
     }
 
     function addDuration() {
-      const id = 'dur_' + Date.now();
-      durations.push({ id, label: '', months: 6 });
+      durations.push({ id: 'dur_' + Date.now(), label: '', months: 6 });
       renderDurations();
     }
 
@@ -119,20 +260,25 @@ import Dashboard from '../../layouts/Dashboard.astro';
 
     function renderDurations() {
       const container = document.getElementById('durations');
+      if (durations.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada durasi. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
       container.innerHTML = durations.map((dur, i) => `
-        <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
-          <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="form-input" style="flex: 1"
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
+          <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="dash-form-input" style="flex:1"
             oninput="durations[${i}].label = this.value" />
-          <input type="number" value="${dur.months}" placeholder="Bulan" class="form-input" style="width: 100px"
-            oninput="durations[${i}].months = parseInt(this.value)" />
-          <button type="button" onclick="removeDuration(${i})" class="btn btn-danger btn-sm">Hapus</button>
+          <input type="number" value="${dur.months}" placeholder="Bulan" class="dash-form-input" style="width:120px" min="1"
+            oninput="durations[${i}].months = parseInt(this.value) || 1" />
+          <button type="button" onclick="removeDuration(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
         </div>
       `).join('');
     }
 
     function addPlan() {
-      const id = 'plan_' + Date.now();
-      plans.push({ id, categoryIndex: 0, durationIndex: 0, name: '', description: '', price: '', priceSuffix: 'per bulan', ctaText: 'Contact us', ctaUrl: '', features: [] });
+      if (categories.length === 0) { alert('Tambahkan kategori terlebih dahulu'); return; }
+      if (durations.length === 0) { alert('Tambahkan durasi terlebih dahulu'); return; }
+      plans.push({ id: 'plan_' + Date.now(), categoryIndex: 0, durationIndex: 0, name: '', description: '', price: '', priceSuffix: 'per bulan', ctaText: 'Contact us', ctaUrl: '', features: [] });
       renderPlans();
     }
 
@@ -153,104 +299,183 @@ import Dashboard from '../../layouts/Dashboard.astro';
 
     function renderPlans() {
       const container = document.getElementById('plans');
+      if (plans.length === 0) {
+        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada paket. Klik tombol di bawah untuk menambah.</p>';
+        return;
+      }
       container.innerHTML = plans.map((plan, i) => `
-        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-            <h4 style="font-weight: 600;">Paket ${i + 1}</h4>
-            <button type="button" onclick="removePlan(${i})" class="btn btn-danger btn-sm">Hapus</button>
+        <div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px;background:#fafafa;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h4 style="font-weight:600;font-size:16px;">Paket ${i + 1}</h4>
+            <button type="button" onclick="removePlan(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
           </div>
-          <div class="grid grid-2 mb-4">
-            <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <select class="form-input form-select" onchange="plans[${i}].categoryIndex = parseInt(this.value)">
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Kategori</label>
+              <select class="dash-form-input dash-form-select" onchange="plans[${i}].categoryIndex = parseInt(this.value)">
                 ${categories.map((cat, ci) => `<option value="${ci}" ${plan.categoryIndex === ci ? 'selected' : ''}>${cat.name || 'Kategori ' + (ci+1)}</option>`).join('')}
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Durasi</label>
-              <select class="form-input form-select" onchange="plans[${i}].durationIndex = parseInt(this.value)">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Durasi</label>
+              <select class="dash-form-input dash-form-select" onchange="plans[${i}].durationIndex = parseInt(this.value)">
                 ${durations.map((dur, di) => `<option value="${di}" ${plan.durationIndex === di ? 'selected' : ''}>${dur.label || 'Durasi ' + (di+1)}</option>`).join('')}
               </select>
             </div>
           </div>
-          <div class="grid grid-2 mb-4">
-            <div class="form-group">
-              <label class="form-label">Nama Paket</label>
-              <input type="text" value="${plan.name}" class="form-input" oninput="plans[${i}].name = this.value" />
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">Nama Paket</label>
+              <input type="text" value="${plan.name}" class="dash-form-input" placeholder="Basic Plan" oninput="plans[${i}].name = this.value" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Harga (kosongkan jika Hubungi Kami)</label>
-              <input type="number" value="${plan.price}" class="form-input" oninput="plans[${i}].price = this.value" />
-            </div>
-          </div>
-          <div class="form-group mb-4">
-            <label class="form-label">Deskripsi</label>
-            <textarea class="form-input form-textarea" oninput="plans[${i}].description = this.value">${plan.description}</textarea>
-          </div>
-          <div class="grid grid-2 mb-4">
-            <div class="form-group">
-              <label class="form-label">CTA Text</label>
-              <input type="text" value="${plan.ctaText}" class="form-input" oninput="plans[${i}].ctaText = this.value" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">CTA URL (opsional)</label>
-              <input type="text" value="${plan.ctaUrl}" class="form-input" oninput="plans[${i}].ctaUrl = this.value" />
+            <div class="dash-form-group">
+              <label class="dash-form-label">Harga (kosongkan = Hubungi Kami)</label>
+              <input type="number" value="${plan.price}" class="dash-form-input" placeholder="500000" oninput="plans[${i}].price = this.value" />
             </div>
           </div>
-          <div>
-            <label class="form-label">Fitur</label>
+          <div class="dash-form-group dash-mb-4">
+            <label class="dash-form-label">Deskripsi</label>
+            <textarea class="dash-form-input dash-form-textarea" placeholder="Deskripsi paket..." oninput="plans[${i}].description = this.value">${plan.description}</textarea>
+          </div>
+          <div class="dash-grid dash-grid-2 dash-mb-4">
+            <div class="dash-form-group">
+              <label class="dash-form-label">CTA Text</label>
+              <input type="text" value="${plan.ctaText}" class="dash-form-input" oninput="plans[${i}].ctaText = this.value" />
+            </div>
+            <div class="dash-form-group">
+              <label class="dash-form-label">CTA URL (opsional)</label>
+              <input type="text" value="${plan.ctaUrl}" class="dash-form-input" placeholder="https://wa.me/..." oninput="plans[${i}].ctaUrl = this.value" />
+            </div>
+          </div>
+          <div style="border-top:1px solid #e5e7eb;padding-top:16px;margin-top:8px;">
+            <label class="dash-form-label" style="font-weight:600;">Fitur Paket</label>
             ${plan.features.map((feat, fi) => `
-              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="form-input" style="width: 200px"
+              <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="dash-form-input" style="width:180px"
                   oninput="plans[${i}].features[${fi}].category = this.value" />
-                <input type="text" value="${feat.name}" placeholder="Nama Fitur" class="form-input" style="flex: 1"
+                <input type="text" value="${feat.name}" placeholder="Nama Fitur" class="dash-form-input" style="flex:1"
                   oninput="plans[${i}].features[${fi}].name = this.value" />
-                <button type="button" onclick="removeFeature(${i}, ${fi})" class="btn btn-danger btn-sm">Hapus</button>
+                <button type="button" onclick="removeFeature(${i}, ${fi})" class="dash-btn dash-btn-danger dash-btn-sm">✕</button>
               </div>
             `).join('')}
-            <button type="button" onclick="addFeature(${i})" class="btn btn-secondary btn-sm mt-2">+ Tambah Fitur</button>
+            <button type="button" onclick="addFeature(${i})" class="dash-btn dash-btn-secondary dash-btn-sm">+ Tambah Fitur</button>
           </div>
         </div>
       `).join('');
     }
 
+    function renderReview() {
+      const form = document.getElementById('createForm');
+      const fd = new FormData(form);
+      const review = document.getElementById('review');
+
+      const basicHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Informasi Dasar</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;">
+              <div><strong>Client:</strong> ${fd.get('client_name')}</div>
+              <div><strong>Perusahaan:</strong> ${fd.get('company_name')}</div>
+              <div><strong>Slug:</strong> /p/${fd.get('slug')}</div>
+              <div><strong>Status:</strong> ${fd.get('status')}</div>
+            </div>
+            <div style="margin-top:8px;font-size:14px;"><strong>Header:</strong> ${fd.get('header_title')}</div>
+            ${fd.get('valid_until') ? `<div style="margin-top:4px;font-size:14px;"><strong>Valid Sampai:</strong> ${fd.get('valid_until')}</div>` : ''}
+          </div>
+        </div>`;
+
+      const catHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Kategori (${categories.length})</h3>
+            ${categories.length === 0 ? '<p class="dash-text-gray">Tidak ada kategori</p>' : categories.map(c => `<div style="padding:6px 0;font-size:14px;">• <strong>${c.name}</strong> <span style="color:#9ca3af;">(${c.icon})</span></div>`).join('')}
+          </div>
+        </div>`;
+
+      const durHtml = `
+        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Durasi (${durations.length})</h3>
+            ${durations.length === 0 ? '<p class="dash-text-gray">Tidak ada durasi</p>' : durations.map(d => `<div style="padding:6px 0;font-size:14px;">• <strong>${d.label}</strong> <span style="color:#9ca3af;">(${d.months} bulan)</span></div>`).join('')}
+          </div>
+        </div>`;
+
+      const planHtml = `
+        <div class="dash-card" style="border:1px solid #e5e7eb;">
+          <div class="dash-card-body">
+            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Paket Harga (${plans.length})</h3>
+            ${plans.length === 0 ? '<p class="dash-text-gray">Tidak ada paket</p>' : plans.map((p, i) => {
+              const catName = categories[p.categoryIndex]?.name || 'N/A';
+              const durName = durations[p.durationIndex]?.label || 'N/A';
+              const priceStr = p.price ? 'Rp ' + parseInt(p.price).toLocaleString('id-ID') + ' ' + (p.priceSuffix || 'per bulan') : 'Hubungi Kami';
+              return `
+                <div style="padding:12px;background:#f9fafb;border-radius:8px;margin-bottom:8px;">
+                  <div style="font-size:14px;"><strong>Paket ${i+1}:</strong> ${p.name || '(belum bernama)'}</div>
+                  <div style="font-size:13px;color:#6b7280;margin-top:4px;">
+                    ${catName} · ${durName} · ${priceStr} · ${p.features.length} fitur
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+
+      review.innerHTML = basicHtml + catHtml + durHtml + planHtml;
+    }
+
     document.getElementById('createForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
-      
-      const data = {
-        client_name: formData.get('client_name'),
-        company_name: formData.get('company_name'),
-        slug: formData.get('slug'),
-        status: formData.get('status'),
-        header_title: formData.get('header_title'),
-        valid_until: formData.get('valid_until') || null,
-        categories: categories.map(c => ({ name: c.name, icon: c.icon })),
-        durations: durations.map(d => ({ label: d.label, months: d.months })),
-        plans: plans.map(p => ({
-          categoryIndex: p.categoryIndex,
-          durationIndex: p.durationIndex,
-          name: p.name,
-          description: p.description,
-          price: p.price ? parseInt(p.price) : null,
-          priceSuffix: p.priceSuffix,
-          ctaText: p.ctaText,
-          ctaUrl: p.ctaUrl,
-          features: p.features
-        }))
-      };
+      const submitBtn = document.getElementById('submitBtn');
 
-      const response = await fetch('/api/pricing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Menyimpan...';
 
-      if (response.ok) {
-        window.location.href = '/dashboard';
-      } else {
-        alert('Error creating pricing page');
+      try {
+        const data = {
+          client_name: formData.get('client_name'),
+          company_name: formData.get('company_name'),
+          slug: formData.get('slug'),
+          status: formData.get('status'),
+          header_title: formData.get('header_title'),
+          valid_until: formData.get('valid_until') || null,
+          categories: categories.map(c => ({ name: c.name, icon: c.icon })),
+          durations: durations.map(d => ({ label: d.label, months: d.months })),
+          plans: plans.map(p => ({
+            categoryIndex: p.categoryIndex,
+            durationIndex: p.durationIndex,
+            name: p.name,
+            description: p.description,
+            price: p.price ? parseInt(p.price) : null,
+            priceSuffix: p.priceSuffix,
+            ctaText: p.ctaText,
+            ctaUrl: p.ctaUrl,
+            features: p.features
+          }))
+        };
+
+        const response = await fetch('/api/pricing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          window.location.href = '/dashboard';
+        } else {
+          const errorData = await response.json();
+          alert('Error: ' + (errorData.error || 'Gagal membuat pricing page'));
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Simpan Pricing Page';
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Simpan Pricing Page';
       }
     });
+
+    renderCategories();
+    renderDurations();
+    renderPlans();
   </script>
 </Dashboard>

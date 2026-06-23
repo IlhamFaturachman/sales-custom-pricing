@@ -4,10 +4,10 @@ Sistem internal untuk tim sales yang dapat menghasilkan halaman pricing khusus u
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15 + TypeScript + App Router
+- **Framework**: Astro 5 + TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Auth**: Supabase Auth
-- **Deployment**: Vercel
+- **Deployment**: Vercel (SSR)
 
 ## Setup
 
@@ -22,7 +22,7 @@ npm install
 ### 2. Supabase Setup
 
 1. Buat project di [Supabase](https://supabase.com)
-2. Buka SQL Editor dan jalankan migration dari `supabase/migrations/001_create_pricing_tables.sql`
+2. Buat tabel: `pricing_pages`, `pricing_categories`, `pricing_durations`, `pricing_plans`, `pricing_features`
 3. Buka **Authentication > Providers** dan enable Email provider
 4. Buat user baru di **Authentication > Users**
 
@@ -35,8 +35,8 @@ cp .env.local.example .env.local
 ```
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
@@ -56,24 +56,10 @@ Buka http://localhost:3000
 |-----|-------------|
 | `/` | Landing page |
 | `/login` | Login sales |
-| `/dashboard` | List semua pricing |
-| `/dashboard/create` | Buat pricing baru |
-| `/dashboard/edit/[id]` | Edit pricing |
+| `/dashboard` | List semua pricing (protected) |
+| `/dashboard/create` | Buat pricing baru (protected) |
+| `/dashboard/edit/[id]` | Edit pricing (protected) |
 | `/p/[slug]` | Public pricing page (client view) |
-
-## Flow
-
-### Sales Flow
-1. Login ke dashboard
-2. Buat pricing baru
-3. Input client info, kategori, durasi, plan, dan fitur
-4. Set status ke "Published"
-5. Copy link `/p/[slug]` dan kirim ke client
-
-### Client Flow
-1. Buka link yang dikirim sales
-2. Lihat pricing yang sudah dikustomisasi
-3. Klik "Contact us" untuk hubungi sales
 
 ## Database Schema
 
@@ -87,30 +73,10 @@ pricing_pages (header & meta)
 
 ## Features
 
-- ✅ CRUD pricing page
-- ✅ Dynamic kategori (tab)
-- ✅ Dynamic durasi (6/12 bulan, dll)
-- ✅ Dynamic pricing per kategori + durasi
-- ✅ Dynamic fitur per plan
-- ✅ Duplicate pricing
-- ✅ Status management (draft/published/expired/archived)
-- ✅ Expired page handling
-- ✅ Responsive design
-- ✅ Authentication
-
-## Deployment
-
-### Vercel
-
-1. Push ke GitHub
-2. Import project di Vercel
-3. Add environment variables
-4. Deploy
-
-### Environment Variables di Vercel
-
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-```
+- Authentication & route protection
+- Step-by-step wizard untuk create/edit pricing
+- Dynamic kategori, durasi, plan, dan fitur
+- Cascade delete
+- Slug uniqueness validation
+- Responsive design (mobile-friendly)
+- Status management (draft/published)
