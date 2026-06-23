@@ -1,9 +1,11 @@
 ---
 import { supabase } from '../../lib/supabase';
+import pricingScripts from '../../data/_pricing-scripts.js?raw';
+import headCss from '../../data/_template-head-css.html?raw';
+import footerHtml from '../../data/_template-footer.html?raw';
 
 const { slug } = Astro.params;
 
-// Fetch pricing page
 const { data: page, error } = await supabase
   .from('pricing_pages')
   .select('*')
@@ -14,7 +16,6 @@ if (error || !page) {
   return Astro.redirect('/404');
 }
 
-// Fetch categories, durations, plans
 const [categoriesResult, durationsResult, plansResult] = await Promise.all([
   supabase.from('pricing_categories').select('*').eq('pricing_page_id', page.id).order('sort_order'),
   supabase.from('pricing_durations').select('*').eq('pricing_page_id', page.id).order('sort_order'),
@@ -25,7 +26,6 @@ const categories = categoriesResult.data || [];
 const durations = durationsResult.data || [];
 const plans = plansResult.data || [];
 
-// Fetch features
 const planIds = plans.map(p => p.id);
 const featuresResult = planIds.length > 0
   ? await supabase.from('pricing_features').select('*').in('pricing_plan_id', planIds).order('sort_order')
@@ -33,13 +33,11 @@ const featuresResult = planIds.length > 0
 
 const features = featuresResult.data || [];
 
-// Attach features to plans
 const plansWithFeatures = plans.map(plan => ({
   ...plan,
   features: features.filter(f => f.pricing_plan_id === plan.id),
 }));
 
-// Group plans by category and duration
 const plansByCategoryAndDuration: Record<string, Record<string, any[]>> = {};
 categories.forEach(cat => {
   plansByCategoryAndDuration[cat.id] = {};
@@ -50,13 +48,14 @@ categories.forEach(cat => {
   });
 });
 
-// Icons mapping
 const icons: Record<string, string> = {
   'omnichannel': '/_astro/omnichannel-active.5275cfd7.svg',
   'whatsapp': '/_astro/wa.973797de.svg',
   'wa': '/_astro/wa.973797de.svg',
   'system': '/_astro/system.9f773c00.svg',
   'maintenance': '/_astro/system.9f773c00.svg',
+  'broadcast': '/_astro/brodcast.414c2162.svg',
+  'chatbot': '/_astro/chatbot.bfd99bf8.svg',
 };
 
 function formatPrice(price: number | null): string {
@@ -76,6 +75,8 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
   });
   return Object.entries(grouped).map(([category, feats]) => ({ category, feats }));
 }
+
+const pricingScriptsStr = pricingScripts;
 ---
 <html lang="id">
   <head>
@@ -92,10 +93,9 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
     </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={'Pricing page untuk ' + (page.company_name || page.client_name)} />
+    <meta name="description" content={`Pricing custom untuk ${page.company_name || page.client_name}`} />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 
-    <!-- fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet" />
@@ -105,10 +105,11 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
     <link rel="stylesheet" href="/_astro/index.f93530f0.css" />
     <link rel="stylesheet" href="/_astro/index.17256798.css" />
     <link rel="stylesheet" href="/_astro/index.2c480ef4.css" />
+    <Fragment set:html={headCss} />
   </head>
   <body>
     <div id="default-layout">
-      <div id="main-content" class="pt-11">
+      <div id="main-content">
         <div class="layout-container">
           <div class="content bg-white">
             <div class="py-8 md:py-20">
@@ -118,6 +119,11 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
                     <h1 class="text-center text-[22px] font-extrabold text-slate-900 text-sm sm:text-base md:text-lg lg:text-5xl leading-snug">
                       {page.header_title}
                     </h1>
+                    {page.valid_until && (
+                      <p class="text-center text-sm text-gray-500 mt-4">
+                        Berlaku sampai: {page.valid_until}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -239,6 +245,7 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
                       ))}
                     </div>
                   </div>
+
                   <div class="my-6 block md:hidden">
                     <div class="flex justify-center mb-12">
                       <div class="inline-flex bg-[#f4f6f8] rounded-full p-1 shadow-lg text-sm">
@@ -263,73 +270,72 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
                             data-duration-id={dur.id}
                             style={'display: ' + (isDefault ? '' : 'none')}
                           >
-                            <div class="swiper">
-                              <div class="swiper-wrapper">
+                            <div class="grid grid-cols-1 gap-6 mt-4 px-4">
+                              {plans.map(plan => (
+                                <div class="flex justify-center">
+                                  <div class="w-full max-w-[320px] bg-white rounded-xl overflow-clip shadow-[0_2px_20px_rgba(255,115,0,0.2)] flex flex-col">
+                                    <div class="mt-2 px-3 py-2 flex items-center relative">
+                                      <p class="text-sm font-semibold font-sora">
+                                        <span class="text-green-500">{plan.plan_name}</span>
+                                      </p>
+                                    </div>
+                                    <div class="ml-3 pt-1">
+                                      <div class="mb-4">
+                                        <p>
+                                          <span class="text-xl font-semibold font-sora">
+                                            {formatPrice(plan.price)}
+                                          </span>
+                                          {plan.price !== null && (
+                                            <span class="font-light text-sm"> {plan.price_suffix || 'per bulan'}</span>
+                                          )}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div class="px-3 flex flex-col justify-between pb-2 pt-2 mt-auto">
+                                      <a
+                                        href={plan.cta_url || 'https://wa.me/6281234511449?text=Halo%20Maxchat,%20saya%20tertarik%20untuk%20menggunakan%20layanan%20Maxchat'}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="btn primary w-full md rounded-lg font-semibold text-center"
+                                        aria-label={plan.cta_text || 'Contact us'}
+                                      >
+                                        {plan.cta_text || 'Contact us'}
+                                      </a>
+                                    </div>
+                                    <div class="p-4 min-h-[200px]">
+                                      <p class="text-sm">{plan.plan_description || ''}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div class="mt-8 max-w-sm mx-auto">
+                              <div id="accordion-mobile">
                                 {plans.map(plan => (
-                                  <div class="swiper-slide">
-                                    <div class="flex-col items-center justify-center">
-                                      <div class="flex justify-center">
-                                        <div class="w-[280px] bg-white rounded-xl overflow-clip shadow-[0_2px_20px_rgba(255,115,0,0.2)] flex flex-col">
-                                          <div class="mt-2 px-3 py-2 flex items-center relative">
-                                            <p class="text-sm font-semibold font-sora">
-                                              <span class="text-green-500">{plan.plan_name}</span>
-                                            </p>
-                                          </div>
-                                          <div class="ml-3 pt-1">
-                                            <div class="mb-4">
-                                              <p>
-                                                <span class="text-xl font-semibold font-sora">
-                                                  {formatPrice(plan.price)}
-                                                </span>
-                                                {plan.price !== null && (
-                                                  <span class="font-light text-sm"> {plan.price_suffix || 'per bulan'}</span>
-                                                )}
-                                              </p>
-                                            </div>
-                                          </div>
-                                          <div class="px-3 flex flex-col justify-between pb-2 pt-2 mt-auto">
-                                            <a
-                                              href={plan.cta_url || 'https://wa.me/6281234511449?text=Halo%20Maxchat,%20saya%20tertarik%20untuk%20menggunakan%20layanan%20Maxchat'}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              class="btn primary w-full md rounded-lg font-semibold text-center"
-                                              aria-label={plan.cta_text || 'Contact us'}
-                                            >
-                                              {plan.cta_text || 'Contact us'}
-                                            </a>
-                                          </div>
-                                          <div class="p-4 min-h-[200px]">
-                                            <p class="text-sm">{plan.plan_description || ''}</p>
-                                          </div>
-                                        </div>
+                                  <div class="mb-4">
+                                    <button
+                                      type="button"
+                                      class="btn accordion w-full base rounded-lg !p-3 md:!px-4 md:!py-6"
+                                    >
+                                      <div class="flex justify-between text-left text-base md:text-lg">
+                                        Anda akan mendapatkan
+                                        <img class="ml-4" src="/_astro/chevron-down.ea170c7f.svg" alt="chevron-icon" />
                                       </div>
-                                      <div class="mt-8 max-w-sm mx-auto">
-                                        <div id="accordion">
-                                          <div>
-                                            <button type="button" class="btn accordion w-full base rounded-lg !p-3 md:!px-4 md:!py-6">
-                                              <div class="flex justify-between text-left text-base md:text-lg">
-                                                Anda akan mendapatkan
-                                                <img class="ml-4" src="/_astro/chevron-down.ea170c7f.svg" alt="chevron-icon" />
+                                    </button>
+                                    <div class="transition-all overflow-hidden text-left text-sm text-neutral-500 delay-75 duration-300 hover:text-neutral-500 md:text-base px-4 max-h-0">
+                                      {getGroupedFeatures(plan).map(({category, feats}) => (
+                                        <div>
+                                          <div class="mt-4 mb-2 capitalize"><b>{category}</b></div>
+                                          {feats.map(f => (
+                                            <div>
+                                              <div class="flex items-start capitalize">
+                                                <img class="mr-4 mt-[4px] h-[16px] w-[16px]" src="/_astro/check-yellow.f86eb9a2.svg" alt="check-icon" />
+                                                <span>{f.feature_name}</span>
                                               </div>
-                                            </button>
-                                            <div class="transition-all overflow-hidden text-left text-sm text-neutral-500 delay-75 duration-300 hover:text-neutral-500 md:text-base px-4 max-h-0">
-                                              {getGroupedFeatures(plan).map(({category, feats}) => (
-                                                <div>
-                                                  <div class="mt-4 mb-2 capitalize"><b>{category}</b></div>
-                                                  {feats.map(f => (
-                                                    <div>
-                                                      <div class="flex items-start capitalize">
-                                                        <img class="mr-4 mt-[4px] h-[16px] w-[16px]" src="/_astro/check-yellow.f86eb9a2.svg" alt="check-icon" />
-                                                        <span>{f.feature_name}</span>
-                                                      </div>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              ))}
                                             </div>
-                                          </div>
+                                          ))}
                                         </div>
-                                      </div>
+                                      ))}
                                     </div>
                                   </div>
                                 ))}
@@ -343,108 +349,13 @@ function getGroupedFeatures(plan: any): Array<{category: string, feats: any[]}> 
                 </div>
               </section>
 
-              <!-- Footer -->
-              <footer class="bg-orange-500 text-white py-12">
-                <div class="container mx-auto px-4">
-                  <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="mb-6 md:mb-0">
-                      <img src="/_astro/Logo.5a7ae364.svg" alt="Maxchat" class="h-8 brightness-0 invert" />
-                      <p class="mt-2 text-sm text-orange-100">Solusi Omnichannel Terintegrasi</p>
-                    </div>
-                    <div class="flex gap-8">
-                      <div>
-                        <h4 class="font-semibold mb-3">Perusahaan</h4>
-                        <ul class="text-sm text-orange-100 space-y-2">
-                          <li><a href="/" class="hover:text-white">Tentang Kami</a></li>
-                          <li><a href="/produk" class="hover:text-white">Produk</a></li>
-                          <li><a href="/contact-us" class="hover:text-white">Kontak</a></li>
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 class="font-semibold mb-3">Legal</h4>
-                        <ul class="text-sm text-orange-100 space-y-2">
-                          <li><a href="/legal/privacy" class="hover:text-white">Kebijakan Privasi</a></li>
-                          <li><a href="/legal/tnc" class="hover:text-white">Syarat & Ketentuan</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mt-8 pt-8 border-t border-orange-400 text-center text-sm text-orange-100">
-                    © PT Maxchat Inovasi Indonesia (2026)
-                  </div>
-                </div>
-              </footer>
+              <Fragment set:html={footerHtml} />
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var activeCategoryId = null;
-        var activeDurationId = null;
-        
-        var defaultCategoryBtn = document.querySelector('.category-tab.border-primary');
-        var defaultDurationBtn = document.querySelector('.duration-btn.bg-white');
-        if (defaultCategoryBtn) activeCategoryId = defaultCategoryBtn.getAttribute('data-category-id');
-        if (defaultDurationBtn) activeDurationId = defaultDurationBtn.getAttribute('data-duration-id');
-        
-        function updatePlanVisibility() {
-          document.querySelectorAll('.plan-group, .mobile-plan-group').forEach(function(group) {
-            var catMatch = group.getAttribute('data-category-id') === activeCategoryId;
-            var durMatch = group.getAttribute('data-duration-id') === activeDurationId;
-            group.style.display = (catMatch && durMatch) ? '' : 'none';
-          });
-        }
-        
-        document.querySelectorAll('.btn.accordion').forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            var content = this.nextElementSibling;
-            if (content) {
-              if (content.classList.contains('max-h-0')) {
-                content.classList.remove('max-h-0');
-                content.style.maxHeight = content.scrollHeight + 'px';
-                this.classList.add('active');
-              } else {
-                content.classList.add('max-h-0');
-                content.style.maxHeight = '0';
-                this.classList.remove('active');
-              }
-            }
-          });
-        });
-        
-        document.querySelectorAll('.category-tab').forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            document.querySelectorAll('.category-tab').forEach(function(b) {
-              b.classList.remove('border-primary', 'border-b-4');
-              b.classList.add('border-b-4', 'border-neutral-300');
-              var span = b.querySelector('span');
-              if (span) { span.classList.remove('text-primary'); span.classList.add('text-neutral-400'); }
-            });
-            this.classList.add('border-primary', 'border-b-4');
-            this.classList.remove('border-neutral-300');
-            var span = this.querySelector('span');
-            if (span) { span.classList.add('text-primary'); span.classList.remove('text-neutral-400'); }
-            activeCategoryId = this.getAttribute('data-category-id');
-            updatePlanVisibility();
-          });
-        });
-        
-        document.querySelectorAll('.duration-btn').forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            document.querySelectorAll('.duration-btn').forEach(function(b) {
-              b.classList.remove('bg-white', 'text-orange-600', 'shadow-lg');
-              b.classList.add('text-gray-700');
-            });
-            this.classList.add('bg-white', 'text-orange-600', 'shadow-lg');
-            this.classList.remove('text-gray-700');
-            activeDurationId = this.getAttribute('data-duration-id');
-            updatePlanVisibility();
-          });
-        });
-      });
-    </script>
+    <script set:html={pricingScriptsStr} />
   </body>
 </html>
