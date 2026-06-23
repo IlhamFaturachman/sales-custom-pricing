@@ -72,8 +72,14 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
 ---
 <Dashboard title="Edit Pricing Page">
   <div class="dash-page-header">
-    <h1 class="dash-page-title">Edit Pricing Page</h1>
-    <a href="/dashboard" class="dash-btn dash-btn-secondary">Kembali</a>
+    <div>
+      <h2 class="dash-page-title">Edit Pricing Page</h2>
+      <p class="dash-page-subtitle">Perbarui halaman pricing untuk {page.client_name}</p>
+    </div>
+    <a href="/dashboard" class="dash-btn dash-btn-secondary">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      Kembali
+    </a>
   </div>
 
   <div class="dash-wizard-progress">
@@ -107,9 +113,12 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     <div id="step1" class="dash-wizard-step">
       <div class="dash-card">
         <div class="dash-card-header">
-          <h2 class="dash-card-title">Informasi Dasar</h2>
+          <div>
+            <h3 class="dash-card-title">Informasi Dasar</h3>
+            <p class="dash-card-subtitle">Data client dan konfigurasi halaman pricing</p>
+          </div>
         </div>
-        <div class="dash-card-body">
+        <div class="dash-card-body" style="padding: 24px;">
           <div class="dash-grid dash-grid-2">
             <div class="dash-form-group">
               <label class="dash-form-label">Nama Client *</label>
@@ -142,8 +151,11 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
             <label class="dash-form-label">Valid Sampai</label>
             <input type="date" name="valid_until" class="dash-form-input" value={page.valid_until || ''} />
           </div>
-          <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" onclick="nextStep(2)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          <div style="display: flex; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+            <button type="button" onclick="nextStep(2)" class="dash-btn dash-btn-primary">
+              Lanjut ke Kategori
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -152,15 +164,26 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     <div id="step2" class="dash-wizard-step" style="display: none;">
       <div class="dash-card">
         <div class="dash-card-header">
-          <h2 class="dash-card-title">Kategori Produk</h2>
+          <div>
+            <h3 class="dash-card-title">Kategori Produk</h3>
+            <p class="dash-card-subtitle">Tambahkan kategori yang akan ditampilkan sebagai tab</p>
+          </div>
+          <button type="button" onclick="addCategory()" class="dash-btn dash-btn-primary dash-btn-sm">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Kategori
+          </button>
         </div>
-        <div class="dash-card-body">
-          <p class="dash-text-gray dash-mb-4">Tambahkan kategori produk yang akan ditampilkan sebagai tab di halaman pricing.</p>
+        <div class="dash-card-body" style="padding: 24px;">
           <div id="categories"></div>
-          <button type="button" onclick="addCategory()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Kategori</button>
-          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" onclick="prevStep(1)" class="dash-btn dash-btn-secondary">← Kembali</button>
-            <button type="button" onclick="nextStep(3)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+            <button type="button" onclick="prevStep(1)" class="dash-btn dash-btn-secondary">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Kembali
+            </button>
+            <button type="button" onclick="nextStep(3)" class="dash-btn dash-btn-primary">
+              Lanjut ke Durasi
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -169,15 +192,26 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     <div id="step3" class="dash-wizard-step" style="display: none;">
       <div class="dash-card">
         <div class="dash-card-header">
-          <h2 class="dash-card-title">Durasi Langganan</h2>
+          <div>
+            <h3 class="dash-card-title">Durasi Langganan</h3>
+            <p class="dash-card-subtitle">Tambahkan pilihan durasi langganan</p>
+          </div>
+          <button type="button" onclick="addDuration()" class="dash-btn dash-btn-primary dash-btn-sm">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Durasi
+          </button>
         </div>
-        <div class="dash-card-body">
-          <p class="dash-text-gray dash-mb-4">Tambahkan pilihan durasi langganan (misalnya 6 bulan, 12 bulan).</p>
+        <div class="dash-card-body" style="padding: 24px;">
           <div id="durations"></div>
-          <button type="button" onclick="addDuration()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Durasi</button>
-          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" onclick="prevStep(2)" class="dash-btn dash-btn-secondary">← Kembali</button>
-            <button type="button" onclick="nextStep(4)" class="dash-btn dash-btn-primary">Lanjut →</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+            <button type="button" onclick="prevStep(2)" class="dash-btn dash-btn-secondary">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Kembali
+            </button>
+            <button type="button" onclick="nextStep(4)" class="dash-btn dash-btn-primary">
+              Lanjut ke Paket
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -186,15 +220,26 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     <div id="step4" class="dash-wizard-step" style="display: none;">
       <div class="dash-card">
         <div class="dash-card-header">
-          <h2 class="dash-card-title">Paket Harga</h2>
+          <div>
+            <h3 class="dash-card-title">Paket Harga</h3>
+            <p class="dash-card-subtitle">Tambahkan paket harga untuk setiap kombinasi kategori dan durasi</p>
+          </div>
+          <button type="button" onclick="addPlan()" class="dash-btn dash-btn-primary dash-btn-sm">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Paket
+          </button>
         </div>
-        <div class="dash-card-body">
-          <p class="dash-text-gray dash-mb-4">Tambahkan paket harga untuk setiap kombinasi kategori dan durasi.</p>
+        <div class="dash-card-body" style="padding: 24px;">
           <div id="plans"></div>
-          <button type="button" onclick="addPlan()" class="dash-btn dash-btn-secondary dash-mt-4">+ Tambah Paket</button>
-          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-            <button type="button" onclick="prevStep(3)" class="dash-btn dash-btn-secondary">← Kembali</button>
-            <button type="button" onclick="nextStep(5)" class="dash-btn dash-btn-primary">Review →</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+            <button type="button" onclick="prevStep(3)" class="dash-btn dash-btn-secondary">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Kembali
+            </button>
+            <button type="button" onclick="nextStep(5)" class="dash-btn dash-btn-primary">
+              Review
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -203,21 +248,30 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     <div id="step5" class="dash-wizard-step" style="display: none;">
       <div class="dash-card">
         <div class="dash-card-header">
-          <h2 class="dash-card-title">Review & Simpan</h2>
+          <div>
+            <h3 class="dash-card-title">Review & Simpan</h3>
+            <p class="dash-card-subtitle">Periksa kembali semua data sebelum menyimpan</p>
+          </div>
         </div>
-        <div class="dash-card-body">
+        <div class="dash-card-body" style="padding: 24px;">
           <div id="review"></div>
-          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
-            <button type="button" onclick="prevStep(4)" class="dash-btn dash-btn-secondary">← Kembali</button>
-            <button type="submit" id="submitBtn" class="dash-btn dash-btn-primary">Update Pricing Page</button>
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+            <button type="button" onclick="prevStep(4)" class="dash-btn dash-btn-secondary">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              Kembali
+            </button>
+            <button type="submit" id="submitBtn" class="dash-btn dash-btn-primary">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Update Pricing Page
+            </button>
           </div>
         </div>
       </div>
     </div>
   </form>
 
-  <div 
-    id="initial-data" 
+  <div
+    id="initial-data"
     data-categories={JSON.stringify(initialCategories)}
     data-durations={JSON.stringify(initialDurations)}
     data-plans={JSON.stringify(initialPlans)}
@@ -266,7 +320,7 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
 
         if (i < step) {
           num.classList.add('completed');
-          num.innerHTML = '✓';
+          num.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
         } else if (i === step) {
           num.classList.add('active');
           label.classList.add('active');
@@ -309,20 +363,31 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     function renderCategories() {
       const container = document.getElementById('categories');
       if (categories.length === 0) {
-        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada kategori. Klik tombol di bawah untuk menambah.</p>';
+        container.innerHTML = `
+          <div style="text-align:center;padding:48px 20px;border:2px dashed #e2e8f0;border-radius:12px;background:#fafbfc;">
+            <svg width="40" height="40" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="margin:0 auto 12px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+            <p style="color:#64748b;margin:0 0 4px 0;font-size:14px;font-weight:500;">Belum ada kategori</p>
+            <p style="color:#94a3b8;margin:0;font-size:13px;">Klik tombol "Tambah Kategori" di atas untuk memulai</p>
+          </div>`;
         return;
       }
       container.innerHTML = categories.map((cat, i) => `
-        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
-          <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="dash-form-input" style="flex:1"
-            oninput="categories[${i}].name = this.value" />
-          <select class="dash-form-input dash-form-select" style="width:160px" onchange="categories[${i}].icon = this.value">
-            <option value="system" ${cat.icon === 'system' ? 'selected' : ''}>System</option>
-            <option value="omnichannel" ${cat.icon === 'omnichannel' ? 'selected' : ''}>Omnichannel</option>
-            <option value="whatsapp" ${cat.icon === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
-            <option value="maintenance" ${cat.icon === 'maintenance' ? 'selected' : ''}>Maintenance</option>
-          </select>
-          <button type="button" onclick="removeCategory(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:14px;background:#fafbfc;border:1px solid #e2e8f0;border-radius:10px;">
+          <div style="flex:1;">
+            <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="dash-form-input"
+              oninput="categories[${i}].name = this.value" />
+          </div>
+          <div style="width:180px;">
+            <select class="dash-form-input dash-form-select" onchange="categories[${i}].icon = this.value">
+              <option value="system" ${cat.icon === 'system' ? 'selected' : ''}>System</option>
+              <option value="omnichannel" ${cat.icon === 'omnichannel' ? 'selected' : ''}>Omnichannel</option>
+              <option value="whatsapp" ${cat.icon === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+              <option value="maintenance" ${cat.icon === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+            </select>
+          </div>
+          <button type="button" onclick="removeCategory(${i})" class="dash-btn dash-btn-danger dash-btn-sm">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
         </div>
       `).join('');
     }
@@ -341,16 +406,27 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     function renderDurations() {
       const container = document.getElementById('durations');
       if (durations.length === 0) {
-        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada durasi. Klik tombol di bawah untuk menambah.</p>';
+        container.innerHTML = `
+          <div style="text-align:center;padding:48px 20px;border:2px dashed #e2e8f0;border-radius:12px;background:#fafbfc;">
+            <svg width="40" height="40" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="margin:0 auto 12px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <p style="color:#64748b;margin:0 0 4px 0;font-size:14px;font-weight:500;">Belum ada durasi</p>
+            <p style="color:#94a3b8;margin:0;font-size:13px;">Klik tombol "Tambah Durasi" di atas untuk memulai</p>
+          </div>`;
         return;
       }
       container.innerHTML = durations.map((dur, i) => `
-        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:12px;background:#f9fafb;border-radius:8px;">
-          <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="dash-form-input" style="flex:1"
-            oninput="durations[${i}].label = this.value" />
-          <input type="number" value="${dur.months}" placeholder="Bulan" class="dash-form-input" style="width:120px" min="1"
-            oninput="durations[${i}].months = parseInt(this.value) || 1" />
-          <button type="button" onclick="removeDuration(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+        <div style="display:flex;gap:12px;margin-bottom:12px;align-items:center;padding:14px;background:#fafbfc;border:1px solid #e2e8f0;border-radius:10px;">
+          <div style="flex:1;">
+            <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="dash-form-input"
+              oninput="durations[${i}].label = this.value" />
+          </div>
+          <div style="width:140px;">
+            <input type="number" value="${dur.months}" placeholder="Bulan" class="dash-form-input" min="1"
+              oninput="durations[${i}].months = parseInt(this.value) || 1" />
+          </div>
+          <button type="button" onclick="removeDuration(${i})" class="dash-btn dash-btn-danger dash-btn-sm">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
         </div>
       `).join('');
     }
@@ -380,14 +456,22 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     function renderPlans() {
       const container = document.getElementById('plans');
       if (plans.length === 0) {
-        container.innerHTML = '<p class="dash-text-gray" style="text-align:center;padding:24px;">Belum ada paket. Klik tombol di bawah untuk menambah.</p>';
+        container.innerHTML = `
+          <div style="text-align:center;padding:48px 20px;border:2px dashed #e2e8f0;border-radius:12px;background:#fafbfc;">
+            <svg width="40" height="40" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="margin:0 auto 12px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            <p style="color:#64748b;margin:0 0 4px 0;font-size:14px;font-weight:500;">Belum ada paket</p>
+            <p style="color:#94a3b8;margin:0;font-size:13px;">Klik tombol "Tambah Paket" di atas untuk memulai</p>
+          </div>`;
         return;
       }
       container.innerHTML = plans.map((plan, i) => `
-        <div style="border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:16px;background:#fafafa;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h4 style="font-weight:600;font-size:16px;">Paket ${i + 1}</h4>
-            <button type="button" onclick="removePlan(${i})" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+        <div style="border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;background:#fafbfc;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+            <h4 style="font-weight:700;font-size:15px;color:#0f172a;margin:0;">Paket ${i + 1}</h4>
+            <button type="button" onclick="removePlan(${i})" class="dash-btn dash-btn-danger dash-btn-sm">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Hapus
+            </button>
           </div>
           <div class="dash-grid dash-grid-2 dash-mb-4">
             <div class="dash-form-group">
@@ -427,18 +511,25 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
               <input type="text" value="${plan.ctaUrl}" class="dash-form-input" placeholder="https://wa.me/..." oninput="plans[${i}].ctaUrl = this.value" />
             </div>
           </div>
-          <div style="border-top:1px solid #e5e7eb;padding-top:16px;margin-top:8px;">
-            <label class="dash-form-label" style="font-weight:600;">Fitur Paket</label>
+          <div style="border-top:1px solid #e2e8f0;padding-top:16px;margin-top:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <label class="dash-form-label" style="margin:0;font-weight:700;">Fitur Paket</label>
+              <button type="button" onclick="addFeature(${i})" class="dash-btn dash-btn-secondary dash-btn-sm">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Fitur
+              </button>
+            </div>
             ${plan.features.map((feat, fi) => `
               <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="dash-form-input" style="width:180px"
+                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="dash-form-input" style="width:200px"
                   oninput="plans[${i}].features[${fi}].category = this.value" />
                 <input type="text" value="${feat.name}" placeholder="Nama Fitur" class="dash-form-input" style="flex:1"
                   oninput="plans[${i}].features[${fi}].name = this.value" />
-                <button type="button" onclick="removeFeature(${i}, ${fi})" class="dash-btn dash-btn-danger dash-btn-sm">✕</button>
+                <button type="button" onclick="removeFeature(${i}, ${fi})" class="dash-btn dash-btn-danger dash-btn-sm">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
               </div>
             `).join('')}
-            <button type="button" onclick="addFeature(${i})" class="dash-btn dash-btn-secondary dash-btn-sm">+ Tambah Fitur</button>
           </div>
         </div>
       `).join('');
@@ -449,54 +540,51 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
       const fd = new FormData(form);
       const review = document.getElementById('review');
 
+      const reviewCardStyle = 'background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:12px;';
+      const reviewTitleStyle = 'font-size:13px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 12px 0;';
+      const reviewRowStyle = 'display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:1px solid #f1f5f9;';
+      const reviewLabelStyle = 'color:#64748b;';
+
       const basicHtml = `
-        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
-          <div class="dash-card-body">
-            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Informasi Dasar</h3>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;">
-              <div><strong>Client:</strong> ${fd.get('client_name')}</div>
-              <div><strong>Perusahaan:</strong> ${fd.get('company_name')}</div>
-              <div><strong>Slug:</strong> /p/${fd.get('slug')}</div>
-              <div><strong>Status:</strong> ${fd.get('status')}</div>
-            </div>
-            <div style="margin-top:8px;font-size:14px;"><strong>Header:</strong> ${fd.get('header_title')}</div>
-            ${fd.get('valid_until') ? `<div style="margin-top:4px;font-size:14px;"><strong>Valid Sampai:</strong> ${fd.get('valid_until')}</div>` : ''}
-          </div>
+        <div style="${reviewCardStyle}">
+          <p style="${reviewTitleStyle}">Informasi Dasar</p>
+          <div style="${reviewRowStyle}"><span style="${reviewLabelStyle}">Client</span><strong>${fd.get('client_name')}</strong></div>
+          <div style="${reviewRowStyle}"><span style="${reviewLabelStyle}">Perusahaan</span><strong>${fd.get('company_name')}</strong></div>
+          <div style="${reviewRowStyle}"><span style="${reviewLabelStyle}">Slug</span><code class="dash-slug-code">/p/${fd.get('slug')}</code></div>
+          <div style="${reviewRowStyle}"><span style="${reviewLabelStyle}">Status</span><span class="dash-badge ${fd.get('status') === 'published' ? 'dash-badge-green' : 'dash-badge-yellow'}">${fd.get('status')}</span></div>
+          <div style="${reviewRowStyle}"><span style="${reviewLabelStyle}">Header</span><span style="text-align:right;max-width:60%;">${fd.get('header_title')}</span></div>
+          ${fd.get('valid_until') ? `<div style="${reviewRowStyle.replace('border-bottom:1px solid #f1f5f9;', '')}"><span style="${reviewLabelStyle}">Valid Sampai</span><strong>${fd.get('valid_until')}</strong></div>` : ''}
         </div>`;
 
       const catHtml = `
-        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
-          <div class="dash-card-body">
-            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Kategori (${categories.length})</h3>
-            ${categories.length === 0 ? '<p class="dash-text-gray">Tidak ada kategori</p>' : categories.map(c => `<div style="padding:6px 0;font-size:14px;">• <strong>${c.name}</strong> <span style="color:#9ca3af;">(${c.icon})</span></div>`).join('')}
-          </div>
+        <div style="${reviewCardStyle}">
+          <p style="${reviewTitleStyle}">Kategori (${categories.length})</p>
+          ${categories.length === 0 ? '<p class="dash-text-gray" style="margin:0;">Tidak ada kategori</p>' : categories.map((c, i) => `<div style="${reviewRowStyle.replace('border-bottom:1px solid #f1f5f9;', i === categories.length - 1 ? '' : 'border-bottom:1px solid #f1f5f9;')}"><span style="${reviewLabelStyle}">${i + 1}. ${c.name}</span><span class="dash-text-muted">${c.icon}</span></div>`).join('')}
         </div>`;
 
       const durHtml = `
-        <div class="dash-card dash-mb-4" style="border:1px solid #e5e7eb;">
-          <div class="dash-card-body">
-            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Durasi (${durations.length})</h3>
-            ${durations.length === 0 ? '<p class="dash-text-gray">Tidak ada durasi</p>' : durations.map(d => `<div style="padding:6px 0;font-size:14px;">• <strong>${d.label}</strong> <span style="color:#9ca3af;">(${d.months} bulan)</span></div>`).join('')}
-          </div>
+        <div style="${reviewCardStyle}">
+          <p style="${reviewTitleStyle}">Durasi (${durations.length})</p>
+          ${durations.length === 0 ? '<p class="dash-text-gray" style="margin:0;">Tidak ada durasi</p>' : durations.map((d, i) => `<div style="${reviewRowStyle.replace('border-bottom:1px solid #f1f5f9;', i === durations.length - 1 ? '' : 'border-bottom:1px solid #f1f5f9;')}"><span style="${reviewLabelStyle}">${i + 1}. ${d.label}</span><span class="dash-text-muted">${d.months} bulan</span></div>`).join('')}
         </div>`;
 
       const planHtml = `
-        <div class="dash-card" style="border:1px solid #e5e7eb;">
-          <div class="dash-card-body">
-            <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;color:#111827;">Paket Harga (${plans.length})</h3>
-            ${plans.length === 0 ? '<p class="dash-text-gray">Tidak ada paket</p>' : plans.map((p, i) => {
-              const catName = categories[p.categoryIndex]?.name || 'N/A';
-              const durName = durations[p.durationIndex]?.label || 'N/A';
-              const priceStr = p.price ? 'Rp ' + parseInt(p.price).toLocaleString('id-ID') + ' ' + (p.priceSuffix || 'per bulan') : 'Hubungi Kami';
-              return `
-                <div style="padding:12px;background:#f9fafb;border-radius:8px;margin-bottom:8px;">
-                  <div style="font-size:14px;"><strong>Paket ${i+1}:</strong> ${p.name || '(belum bernama)'}</div>
-                  <div style="font-size:13px;color:#6b7280;margin-top:4px;">
-                    ${catName} · ${durName} · ${priceStr} · ${p.features.length} fitur
-                  </div>
-                </div>`;
-            }).join('')}
-          </div>
+        <div style="${reviewCardStyle}">
+          <p style="${reviewTitleStyle}">Paket Harga (${plans.length})</p>
+          ${plans.length === 0 ? '<p class="dash-text-gray" style="margin:0;">Tidak ada paket</p>' : plans.map((p, i) => {
+            const catName = categories[p.categoryIndex]?.name || 'N/A';
+            const durName = durations[p.durationIndex]?.label || 'N/A';
+            const priceStr = p.price ? 'Rp ' + parseInt(p.price).toLocaleString('id-ID') + ' / ' + (p.priceSuffix || 'per bulan') : 'Hubungi Kami';
+            return `
+              <div style="padding:12px;background:#fafbfc;border-radius:8px;margin-bottom:8px;border:1px solid #e2e8f0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <strong style="font-size:14px;">${p.name || 'Paket ' + (i+1)}</strong>
+                  <span class="dash-text-muted" style="font-size:12px;">${p.features.length} fitur</span>
+                </div>
+                <div style="font-size:13px;color:#64748b;">${catName} · ${durName}</div>
+                <div style="font-size:13px;font-weight:600;color:#ea580c;margin-top:4px;">${priceStr}</div>
+              </div>`;
+          }).join('')}
         </div>`;
 
       review.innerHTML = basicHtml + catHtml + durHtml + planHtml;
@@ -508,7 +596,7 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
       const submitBtn = document.getElementById('submitBtn');
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Menyimpan...';
+      submitBtn.innerHTML = '<svg style="width:16px;height:16px;animation:spin 1s linear infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Menyimpan...';
 
       try {
         const data = {
@@ -533,7 +621,7 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
           }))
         };
 
-        const response = await fetch('/api/pricing/{id}', {
+        const response = await fetch(`/api/pricing/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -545,12 +633,12 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
           const errorData = await response.json();
           alert('Error: ' + (errorData.error || 'Gagal mengupdate pricing page'));
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Update Pricing Page';
+          submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Update Pricing Page';
         }
       } catch (err) {
         alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Update Pricing Page';
+        submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Update Pricing Page';
       }
     });
 

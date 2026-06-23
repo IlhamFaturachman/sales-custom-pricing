@@ -6,36 +6,66 @@ const { data: pages, error } = await supabase
   .from('pricing_pages')
   .select('*')
   .order('created_at', { ascending: false });
+
+const totalPages = pages?.length || 0;
+const publishedCount = pages?.filter(p => p.status === 'published').length || 0;
+const draftCount = pages?.filter(p => p.status === 'draft').length || 0;
 ---
 <Dashboard title="Dashboard">
   <div class="dash-page-header">
-    <h1 class="dash-page-title">Pricing Pages</h1>
+    <div>
+      <h2 class="dash-page-title">Pricing Pages</h2>
+      <p class="dash-page-subtitle">Kelola semua halaman pricing custom untuk client</p>
+    </div>
     <a href="/dashboard/create" class="dash-btn dash-btn-primary">
-      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-      Buat Baru
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      Buat Pricing Baru
     </a>
   </div>
 
   <div class="dash-stats-grid">
-    <div class="dash-stat-card">
-      <p class="dash-stat-label">Total Pages</p>
-      <p class="dash-stat-value">{pages?.length || 0}</p>
+    <div class="dash-stat-card stat-total">
+      <div class="dash-stat-header">
+        <p class="dash-stat-label">Total Pages</p>
+        <div class="dash-stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+      </div>
+      <p class="dash-stat-value">{totalPages}</p>
+      <p class="dash-stat-trend">Semua halaman pricing</p>
     </div>
-    <div class="dash-stat-card">
-      <p class="dash-stat-label">Published</p>
-      <p class="dash-stat-value">{pages?.filter(p => p.status === 'published').length || 0}</p>
+
+    <div class="dash-stat-card stat-published">
+      <div class="dash-stat-header">
+        <p class="dash-stat-label">Published</p>
+        <div class="dash-stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+      </div>
+      <p class="dash-stat-value">{publishedCount}</p>
+      <p class="dash-stat-trend">Sedang live</p>
     </div>
-    <div class="dash-stat-card">
-      <p class="dash-stat-label">Draft</p>
-      <p class="dash-stat-value">{pages?.filter(p => p.status === 'draft').length || 0}</p>
+
+    <div class="dash-stat-card stat-draft">
+      <div class="dash-stat-header">
+        <p class="dash-stat-label">Draft</p>
+        <div class="dash-stat-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </div>
+      </div>
+      <p class="dash-stat-value">{draftCount}</p>
+      <p class="dash-stat-trend">Belum dipublikasi</p>
     </div>
   </div>
 
   <div class="dash-card">
     <div class="dash-card-header">
-      <h2 class="dash-card-title">Semua Pricing Page</h2>
+      <div>
+        <h3 class="dash-card-title">Semua Pricing Page</h3>
+        <p class="dash-card-subtitle">Daftar lengkap halaman pricing yang telah dibuat</p>
+      </div>
     </div>
-    <div class="dash-card-body" style="padding: 0;">
+    <div class="dash-card-body">
       {pages && pages.length > 0 ? (
         <table class="dash-table">
           <thead>
@@ -44,7 +74,7 @@ const { data: pages, error } = await supabase
               <th>Perusahaan</th>
               <th>Slug</th>
               <th>Status</th>
-              <th>Aksi</th>
+              <th style="text-align: right;">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -59,11 +89,20 @@ const { data: pages, error } = await supabase
                   </span>
                 </td>
                 <td>
-                  <div class="dash-actions">
-                    <a href={`/p/${page.slug}`} target="_blank" class="dash-btn dash-btn-secondary dash-btn-sm">Preview</a>
-                    <a href={`/dashboard/edit/${page.id}`} class="dash-btn dash-btn-secondary dash-btn-sm">Edit</a>
-                    <form method="POST" action={`/dashboard/delete/${page.id}`} style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus pricing page ini? Semua data terkait akan dihapus.');">
-                      <button type="submit" class="dash-btn dash-btn-danger dash-btn-sm">Hapus</button>
+                  <div class="dash-actions" style="justify-content: flex-end;">
+                    <a href={`/p/${page.slug}`} target="_blank" class="dash-btn dash-btn-secondary dash-btn-sm">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      Preview
+                    </a>
+                    <a href={`/dashboard/edit/${page.id}`} class="dash-btn dash-btn-secondary dash-btn-sm">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                      Edit
+                    </a>
+                    <form method="POST" action={`/dashboard/delete/${page.id}`} style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus pricing page ini?');">
+                      <button type="submit" class="dash-btn dash-btn-danger dash-btn-sm">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Hapus
+                      </button>
                     </form>
                   </div>
                 </td>
@@ -74,7 +113,12 @@ const { data: pages, error } = await supabase
       ) : (
         <div class="dash-empty-state">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <p>Belum ada pricing page. <a href="/dashboard/create">Buat sekarang</a></p>
+          <h3>Belum ada pricing page</h3>
+          <p>Mulai buat halaman pricing custom untuk client pertama Anda</p>
+          <a href="/dashboard/create" class="dash-btn dash-btn-primary">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Buat Pricing Pertama
+          </a>
         </div>
       )}
     </div>
