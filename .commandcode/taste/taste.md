@@ -4,6 +4,7 @@
 
 # workflow
 - Execute work plans directly rather than creating plan documents without execution. Confidence: 0.65
+- Before making changes, do a thorough component-by-component comparison/analysis and discuss findings with user first rather than jumping to implementation. Confidence: 0.70
 
 # css
 - Use scoped CSS with unique class prefixes (e.g., `dash-*`) to prevent layout styles from leaking between pages. Confidence: 0.80
