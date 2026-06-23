@@ -1,0 +1,57 @@
+---
+import Dashboard from '../../layouts/Dashboard.astro';
+---
+<Dashboard title="Login">
+  <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div style="max-width: 400px; width: 100%; padding: 0 20px;">
+      <div class="card">
+        <div class="card-header" style="text-align: center;">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
+          </div>
+          <h1 class="card-title">Login ke Maxchat</h1>
+          <p class="text-sm text-gray-500 mt-4">Masukkan kredensial Anda</p>
+        </div>
+        <div class="card-body">
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-input" required placeholder="admin@maxchat.id" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" name="password" class="form-input" required placeholder="••••••••" />
+            </div>
+            <div id="error" style="display: none; color: #ef4444; font-size: 14px; margin-bottom: 16px;"></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const errorDiv = document.getElementById('error');
+      
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password')
+        })
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard';
+      } else {
+        const data = await response.json();
+        errorDiv.textContent = data.error || 'Login failed';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
+</Dashboard>

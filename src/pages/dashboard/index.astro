@@ -1,0 +1,82 @@
+---
+import Dashboard from '../../layouts/Dashboard.astro';
+import { supabase } from '../../lib/supabase';
+
+const { data: pages, error } = await supabase
+  .from('pricing_pages')
+  .select('*')
+  .order('created_at', { ascending: false });
+---
+<Dashboard title="Dashboard">
+  <div class="page-header">
+    <h1 class="page-title">Pricing Pages</h1>
+    <a href="/dashboard/create" class="btn btn-primary">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Buat Baru
+    </a>
+  </div>
+
+  <div class="grid grid-3 mb-6">
+    <div class="stat-card">
+      <div class="stat-label">Total Pages</div>
+      <div class="stat-value">{pages?.length || 0}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Published</div>
+      <div class="stat-value">{pages?.filter(p => p.status === 'published').length || 0}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Draft</div>
+      <div class="stat-value">{pages?.filter(p => p.status === 'draft').length || 0}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Semua Pricing Page</h2>
+    </div>
+    <div class="card-body">
+      {pages && pages.length > 0 ? (
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Perusahaan</th>
+              <th>Slug</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pages.map(page => (
+              <tr>
+                <td><strong>{page.client_name}</strong></td>
+                <td>{page.company_name}</td>
+                <td><code>/p/{page.slug}</code></td>
+                <td>
+                  <span class={`badge ${page.status === 'published' ? 'badge-green' : 'badge-yellow'}`}>
+                    {page.status}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <a href={`/p/${page.slug}`} target="_blank" class="btn btn-secondary btn-sm">Preview</a>
+                    <a href={`/dashboard/edit/${page.id}`} class="btn btn-secondary btn-sm">Edit</a>
+                    <form method="POST" action={`/dashboard/delete/${page.id}`} style="display: inline;">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div class="empty-state">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          <p>Belum ada pricing page. <a href="/dashboard/create">Buat sekarang</a></p>
+        </div>
+      )}
+    </div>
+  </div>
+</Dashboard>

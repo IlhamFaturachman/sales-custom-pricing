@@ -1,0 +1,113 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = 'Dashboard' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} | Maxchat</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f9fafb; min-height: 100vh; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 256px; background: white; border-right: 1px solid #e5e7eb; position: fixed; height: 100vh; overflow-y: auto; }
+    .sidebar-header { padding: 16px 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px; }
+    .sidebar-logo { width: 32px; height: 32px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .sidebar-title { font-size: 18px; font-weight: bold; color: #111827; }
+    .sidebar-nav { padding: 24px 16px; }
+    .nav-label { font-size: 12px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 12px; margin-bottom: 12px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; color: #4b5563; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+    .nav-item:hover { background: #f9fafb; color: #111827; }
+    .nav-item.active { background: #fff7ed; color: #c2410c; }
+    .nav-item svg { width: 20px; height: 20px; }
+    .main { flex: 1; margin-left: 256px; }
+    .topbar { position: sticky; top: 0; z-index: 10; background: white; border-bottom: 1px solid #e5e7eb; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar-link { font-size: 14px; color: #6b7280; text-decoration: none; }
+    .topbar-link:hover { color: #374151; }
+    .content { padding: 32px; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .page-title { font-size: 24px; font-weight: bold; color: #111827; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+    .btn-primary { background: #ea580c; color: white; }
+    .btn-primary:hover { background: #c2410c; }
+    .btn-secondary { background: white; color: #374151; border: 1px solid #d1d5db; }
+    .btn-secondary:hover { background: #f9fafb; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
+    .card-header { padding: 20px 24px; border-bottom: 1px solid #e5e7eb; }
+    .card-title { font-size: 18px; font-weight: 600; color: #111827; }
+    .card-body { padding: 24px; }
+    .grid { display: grid; gap: 24px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .stat-card { background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 24px; }
+    .stat-label { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+    .stat-value { font-size: 30px; font-weight: bold; color: #111827; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; }
+    .table td { padding: 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; }
+    .table tr:hover { background: #f9fafb; }
+    .badge { display: inline-flex; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; }
+    .badge-gray { background: #f3f4f6; color: #4b5563; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+    .form-input { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+    .form-input:focus { outline: none; border-color: #f97316; box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1); }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 10px center; background-repeat: no-repeat; background-size: 20px; padding-right: 40px; }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .actions { display: flex; gap: 8px; }
+    .empty-state { text-align: center; padding: 48px 24px; color: #6b7280; }
+    .empty-state svg { width: 48px; height: 48px; margin: 0 auto 16px; color: #d1d5db; }
+    .empty-state p { font-size: 14px; }
+    .mb-4 { margin-bottom: 16px; }
+    .mb-6 { margin-bottom: 24px; }
+    .mt-4 { margin-top: 16px; }
+    .text-sm { font-size: 14px; }
+    .text-gray-500 { color: #6b7280; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .gap-2 { gap: 8px; }
+    .gap-4 { gap: 16px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">M</div>
+        <span class="sidebar-title">Maxchat</span>
+      </div>
+      <nav class="sidebar-nav">
+        <p class="nav-label">Menu</p>
+        <a href="/dashboard" class="nav-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+          Dashboard
+        </a>
+        <a href="/dashboard/create" class="nav-item">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          Buat Pricing
+        </a>
+      </nav>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div></div>
+        <a href="https://maxchat.id" target="_blank" class="topbar-link">maxchat.id</a>
+      </header>
+      <div class="content">
+        <slot />
+      </div>
+    </main>
+  </div>
+</body>
+</html>

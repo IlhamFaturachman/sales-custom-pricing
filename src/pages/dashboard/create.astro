@@ -1,0 +1,256 @@
+---
+import Dashboard from '../../layouts/Dashboard.astro';
+---
+<Dashboard title="Buat Pricing Page">
+  <div class="page-header">
+    <h1 class="page-title">Buat Pricing Page Baru</h1>
+    <a href="/dashboard" class="btn btn-secondary">Kembali</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Informasi Dasar</h2>
+    </div>
+    <div class="card-body">
+      <form id="createForm">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Nama Client</label>
+            <input type="text" name="client_name" class="form-input" required placeholder="John Doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Perusahaan</label>
+            <input type="text" name="company_name" class="form-input" required placeholder="PT Maju Sejahtera" />
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Slug URL</label>
+            <input type="text" name="slug" class="form-input" required placeholder="maju-sejahtera" pattern="[a-z0-9-]+" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input form-select">
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Judul Header</label>
+          <input type="text" name="header_title" class="form-input" required placeholder="Solusi Omnichannel Terintegrasi untuk PT Maju Sejahtera" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valid Sampai</label>
+          <input type="date" name="valid_until" class="form-input" />
+        </div>
+
+        <div id="app" data-mode="create">
+          <div class="mb-6">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Kategori</h3>
+            <div id="categories"></div>
+            <button type="button" onclick="addCategory()" class="btn btn-secondary mt-4">+ Tambah Kategori</button>
+          </div>
+
+          <div class="mb-6">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Durasi</h3>
+            <div id="durations"></div>
+            <button type="button" onclick="addDuration()" class="btn btn-secondary mt-4">+ Tambah Durasi</button>
+          </div>
+
+          <div class="mb-6">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px;">Paket Harga</h3>
+            <div id="plans"></div>
+            <button type="button" onclick="addPlan()" class="btn btn-secondary mt-4">+ Tambah Paket</button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 32px;">
+          <a href="/dashboard" class="btn btn-secondary">Batal</a>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script is:inline>
+    let categories = [];
+    let durations = [];
+    let plans = [];
+
+    function addCategory() {
+      const id = 'cat_' + Date.now();
+      categories.push({ id, name: '', icon: 'system' });
+      renderCategories();
+    }
+
+    function removeCategory(index) {
+      categories.splice(index, 1);
+      renderCategories();
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categories');
+      container.innerHTML = categories.map((cat, i) => `
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+          <input type="text" value="${cat.name}" placeholder="Nama Kategori" class="form-input" style="flex: 1" 
+            oninput="categories[${i}].name = this.value" />
+          <select class="form-input form-select" style="width: 150px" onchange="categories[${i}].icon = this.value">
+            <option value="system" ${cat.icon === 'system' ? 'selected' : ''}>System</option>
+            <option value="omnichannel" ${cat.icon === 'omnichannel' ? 'selected' : ''}>Omnichannel</option>
+            <option value="whatsapp" ${cat.icon === 'whatsapp' ? 'selected' : ''}>WhatsApp</option>
+            <option value="maintenance" ${cat.icon === 'maintenance' ? 'selected' : ''}>Maintenance</option>
+          </select>
+          <button type="button" onclick="removeCategory(${i})" class="btn btn-danger btn-sm">Hapus</button>
+        </div>
+      `).join('');
+    }
+
+    function addDuration() {
+      const id = 'dur_' + Date.now();
+      durations.push({ id, label: '', months: 6 });
+      renderDurations();
+    }
+
+    function removeDuration(index) {
+      durations.splice(index, 1);
+      renderDurations();
+    }
+
+    function renderDurations() {
+      const container = document.getElementById('durations');
+      container.innerHTML = durations.map((dur, i) => `
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+          <input type="text" value="${dur.label}" placeholder="Label (e.g., 6 Bulan)" class="form-input" style="flex: 1"
+            oninput="durations[${i}].label = this.value" />
+          <input type="number" value="${dur.months}" placeholder="Bulan" class="form-input" style="width: 100px"
+            oninput="durations[${i}].months = parseInt(this.value)" />
+          <button type="button" onclick="removeDuration(${i})" class="btn btn-danger btn-sm">Hapus</button>
+        </div>
+      `).join('');
+    }
+
+    function addPlan() {
+      const id = 'plan_' + Date.now();
+      plans.push({ id, categoryIndex: 0, durationIndex: 0, name: '', description: '', price: '', priceSuffix: 'per bulan', ctaText: 'Contact us', ctaUrl: '', features: [] });
+      renderPlans();
+    }
+
+    function removePlan(index) {
+      plans.splice(index, 1);
+      renderPlans();
+    }
+
+    function addFeature(planIndex) {
+      plans[planIndex].features.push({ category: '', name: '' });
+      renderPlans();
+    }
+
+    function removeFeature(planIndex, featureIndex) {
+      plans[planIndex].features.splice(featureIndex, 1);
+      renderPlans();
+    }
+
+    function renderPlans() {
+      const container = document.getElementById('plans');
+      container.innerHTML = plans.map((plan, i) => `
+        <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+            <h4 style="font-weight: 600;">Paket ${i + 1}</h4>
+            <button type="button" onclick="removePlan(${i})" class="btn btn-danger btn-sm">Hapus</button>
+          </div>
+          <div class="grid grid-2 mb-4">
+            <div class="form-group">
+              <label class="form-label">Kategori</label>
+              <select class="form-input form-select" onchange="plans[${i}].categoryIndex = parseInt(this.value)">
+                ${categories.map((cat, ci) => `<option value="${ci}" ${plan.categoryIndex === ci ? 'selected' : ''}>${cat.name || 'Kategori ' + (ci+1)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Durasi</label>
+              <select class="form-input form-select" onchange="plans[${i}].durationIndex = parseInt(this.value)">
+                ${durations.map((dur, di) => `<option value="${di}" ${plan.durationIndex === di ? 'selected' : ''}>${dur.label || 'Durasi ' + (di+1)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-2 mb-4">
+            <div class="form-group">
+              <label class="form-label">Nama Paket</label>
+              <input type="text" value="${plan.name}" class="form-input" oninput="plans[${i}].name = this.value" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Harga (kosongkan jika Hubungi Kami)</label>
+              <input type="number" value="${plan.price}" class="form-input" oninput="plans[${i}].price = this.value" />
+            </div>
+          </div>
+          <div class="form-group mb-4">
+            <label class="form-label">Deskripsi</label>
+            <textarea class="form-input form-textarea" oninput="plans[${i}].description = this.value">${plan.description}</textarea>
+          </div>
+          <div class="grid grid-2 mb-4">
+            <div class="form-group">
+              <label class="form-label">CTA Text</label>
+              <input type="text" value="${plan.ctaText}" class="form-input" oninput="plans[${i}].ctaText = this.value" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">CTA URL (opsional)</label>
+              <input type="text" value="${plan.ctaUrl}" class="form-input" oninput="plans[${i}].ctaUrl = this.value" />
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Fitur</label>
+            ${plan.features.map((feat, fi) => `
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <input type="text" value="${feat.category}" placeholder="Kategori Fitur" class="form-input" style="width: 200px"
+                  oninput="plans[${i}].features[${fi}].category = this.value" />
+                <input type="text" value="${feat.name}" placeholder="Nama Fitur" class="form-input" style="flex: 1"
+                  oninput="plans[${i}].features[${fi}].name = this.value" />
+                <button type="button" onclick="removeFeature(${i}, ${fi})" class="btn btn-danger btn-sm">Hapus</button>
+              </div>
+            `).join('')}
+            <button type="button" onclick="addFeature(${i})" class="btn btn-secondary btn-sm mt-2">+ Tambah Fitur</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      const data = {
+        client_name: formData.get('client_name'),
+        company_name: formData.get('company_name'),
+        slug: formData.get('slug'),
+        status: formData.get('status'),
+        header_title: formData.get('header_title'),
+        valid_until: formData.get('valid_until') || null,
+        categories: categories.map(c => ({ name: c.name, icon: c.icon })),
+        durations: durations.map(d => ({ label: d.label, months: d.months })),
+        plans: plans.map(p => ({
+          categoryIndex: p.categoryIndex,
+          durationIndex: p.durationIndex,
+          name: p.name,
+          description: p.description,
+          price: p.price ? parseInt(p.price) : null,
+          priceSuffix: p.priceSuffix,
+          ctaText: p.ctaText,
+          ctaUrl: p.ctaUrl,
+          features: p.features
+        }))
+      };
+
+      const response = await fetch('/api/pricing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard';
+      } else {
+        alert('Error creating pricing page');
+      }
+    });
+  </script>
+</Dashboard>

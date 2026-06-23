@@ -1,0 +1,22 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Maxchat | Dynamic Pricing', description = 'Buat halaman pricing custom untuk setiap client' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  <slot name="head" />
+</head>
+<body>
+  <slot />
+</body>
+</html>
