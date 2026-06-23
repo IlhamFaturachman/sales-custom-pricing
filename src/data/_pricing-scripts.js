@@ -82,21 +82,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  document.querySelectorAll('.btn.accordion').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var content = this.nextElementSibling;
-      if (content) {
-        if (content.classList.contains('max-h-0')) {
-          content.classList.remove('max-h-0');
-          content.style.maxHeight = content.scrollHeight + 'px';
-          this.classList.add('active');
-        } else {
-          content.classList.add('max-h-0');
-          content.style.maxHeight = '0';
-          this.classList.remove('active');
+  function toggleAccordion(btn) {
+    var content = btn.nextElementSibling;
+    if (!content) return;
+    if (content.classList.contains('max-h-0')) {
+      content.classList.remove('max-h-0');
+      content.style.maxHeight = content.scrollHeight + 'px';
+      btn.classList.add('active');
+      // After transition, set to 'none' so content can grow if needed
+      var onEnd = function() {
+        if (!content.classList.contains('max-h-0')) {
+          content.style.maxHeight = 'none';
         }
-      }
-    });
+        content.removeEventListener('transitionend', onEnd);
+      };
+      content.addEventListener('transitionend', onEnd);
+    } else {
+      // Set explicit height first, then to 0 on next frame for smooth animation
+      content.style.maxHeight = content.scrollHeight + 'px';
+      requestAnimationFrame(function() {
+        content.classList.add('max-h-0');
+        content.style.maxHeight = '0';
+        btn.classList.remove('active');
+      });
+    }
+  }
+
+  document.querySelectorAll('.btn.accordion').forEach(function(btn) {
+    btn.addEventListener('click', function() { toggleAccordion(btn); });
   });
 
   document.querySelectorAll('.category-tab').forEach(function(btn) {

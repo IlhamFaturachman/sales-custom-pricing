@@ -2,7 +2,8 @@
 import { supabase } from '../../lib/supabase';
 import pricingScripts from '../../data/_pricing-scripts.js?raw';
 import headCss from '../../data/_template-head-css.html?raw';
-import footerHtml from '../../data/_template-footer.html?raw';
+import calculatorHtml from '../../data/_template/calculator.html?raw';
+import footerHtml from '../../data/_template/footer.html?raw';
 
 const { slug } = Astro.params;
 
@@ -105,6 +106,23 @@ const pricingScriptsStr = pricingScripts;
         display: block;
         overflow: hidden;
         position: relative;
+      }
+
+      /* Accordion styles */
+      .btn.accordion + div {
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      }
+      .max-h-0 {
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+      .btn.accordion img[alt="chevron-icon"] {
+        transition: transform 0.3s ease;
+      }
+      .btn.accordion.active img[alt="chevron-icon"] {
+        transform: rotate(180deg);
       }
     </style>
     <meta charset="UTF-8" />
@@ -368,6 +386,8 @@ const pricingScriptsStr = pricingScripts;
                   </div>
                 </div>
               </section>
+
+              <Fragment set:html={calculatorHtml} />
 
               <Fragment set:html={footerHtml} />
             </div>
