@@ -279,11 +279,22 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
   ></div>
 
   <script is:inline>
-    const initialDataEl = document.getElementById('initial-data');
-    const categories = JSON.parse(initialDataEl.dataset.categories || '[]');
-    const durations = JSON.parse(initialDataEl.dataset.durations || '[]');
-    const plans = JSON.parse(initialDataEl.dataset.plans || '[]');
+    let categories = [];
+    let durations = [];
+    let plans = [];
     let currentStep = 1;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const initialDataEl = document.getElementById('initial-data');
+      if (initialDataEl) {
+        categories = JSON.parse(initialDataEl.dataset.categories || '[]');
+        durations = JSON.parse(initialDataEl.dataset.durations || '[]');
+        plans = JSON.parse(initialDataEl.dataset.plans || '[]');
+      }
+      renderCategories();
+      renderDurations();
+      renderPlans();
+    });
 
     function nextStep(step) {
       if (currentStep === 1 && !validateStep1()) return;
@@ -590,60 +601,59 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
       review.innerHTML = basicHtml + catHtml + durHtml + planHtml;
     }
 
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const submitBtn = document.getElementById('submitBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const submitBtn = document.getElementById('submitBtn');
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<svg style="width:16px;height:16px;animation:spin 1s linear infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Menyimpan...';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<svg style="width:16px;height:16px;animation:spin 1s linear infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Menyimpan...';
 
-      try {
-        const data = {
-          client_name: formData.get('client_name'),
-          company_name: formData.get('company_name'),
-          slug: formData.get('slug'),
-          status: formData.get('status'),
-          header_title: formData.get('header_title'),
-          valid_until: formData.get('valid_until') || null,
-          categories: categories.map(c => ({ name: c.name, icon: c.icon })),
-          durations: durations.map(d => ({ label: d.label, months: d.months })),
-          plans: plans.map(p => ({
-            categoryIndex: p.categoryIndex,
-            durationIndex: p.durationIndex,
-            name: p.name,
-            description: p.description,
-            price: p.price ? parseInt(p.price) : null,
-            priceSuffix: p.priceSuffix,
-            ctaText: p.ctaText,
-            ctaUrl: p.ctaUrl,
-            features: p.features
-          }))
-        };
+        try {
+          const data = {
+            client_name: formData.get('client_name'),
+            company_name: formData.get('company_name'),
+            slug: formData.get('slug'),
+            status: formData.get('status'),
+            header_title: formData.get('header_title'),
+            valid_until: formData.get('valid_until') || null,
+            categories: categories.map(c => ({ name: c.name, icon: c.icon })),
+            durations: durations.map(d => ({ label: d.label, months: d.months })),
+            plans: plans.map(p => ({
+              categoryIndex: p.categoryIndex,
+              durationIndex: p.durationIndex,
+              name: p.name,
+              description: p.description,
+              price: p.price ? parseInt(p.price) : null,
+              priceSuffix: p.priceSuffix,
+              ctaText: p.ctaText,
+              ctaUrl: p.ctaUrl,
+              features: p.features
+            }))
+          };
 
-        const response = await fetch(`/api/pricing/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
+          const id = window.location.pathname.split('/').pop();
+          const response = await fetch(`/api/pricing/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
 
-        if (response.ok) {
-          window.location.href = '/dashboard';
-        } else {
-          const errorData = await response.json();
-          alert('Error: ' + (errorData.error || 'Gagal mengupdate pricing page'));
+          if (response.ok) {
+            window.location.href = '/dashboard';
+          } else {
+            const errorData = await response.json();
+            alert('Error: ' + (errorData.error || 'Gagal mengupdate pricing page'));
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Update Pricing Page';
+          }
+        } catch (err) {
+          alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
           submitBtn.disabled = false;
           submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Update Pricing Page';
         }
-      } catch (err) {
-        alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Update Pricing Page';
-      }
+      });
     });
-
-    renderCategories();
-    renderDurations();
-    renderPlans();
   </script>
 </Dashboard>
