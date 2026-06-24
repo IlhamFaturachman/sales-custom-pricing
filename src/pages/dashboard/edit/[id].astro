@@ -278,7 +278,7 @@ const initialPlans = (dbPlans || []).map((p: any) => ({
     style="display: none;"
   ></div>
 
-  <script>
+  <script is:inline>
     const initialDataEl = document.getElementById('initial-data');
     const categories = JSON.parse(initialDataEl.dataset.categories || '[]');
     const durations = JSON.parse(initialDataEl.dataset.durations || '[]');
